@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meeting.intelligent.dao.MeetingRoomDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.meeting.intelligent.entity.MeetingRoomEntity" id="meetingRoomMap">
+        <result property="roomId" column="room_id"/>
+        <result property="position" column="position"/>
+        <result property="permissionLevel" column="permission_level"/>
+        <result property="idleStartTime" column="idle_start_time"/>
+        <result property="idleEndTime" column="idle_end_time"/>
+        <result property="typeId" column="type_id"/>
+        <result property="roomStatus" column="room_status"/>
+        <result property="roomSort" column="room_sort"/>
+    </resultMap>
+
+
+</mapper>
