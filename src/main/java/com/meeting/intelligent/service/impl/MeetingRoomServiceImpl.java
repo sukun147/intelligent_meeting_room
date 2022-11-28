@@ -1,7 +1,9 @@
 package com.meeting.intelligent.service.impl;
 
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,8 +21,8 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomDao, MeetingR
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<MeetingRoomEntity> page = this.page(
-                new Query<MeetingRoomEntity>().getPage(params),
-                new QueryWrapper<MeetingRoomEntity>()
+            new Query<MeetingRoomEntity>().getPage(params),
+            new QueryWrapper<MeetingRoomEntity>()
         );
 
         return new PageUtils(page);

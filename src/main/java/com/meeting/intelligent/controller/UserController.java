@@ -12,10 +12,7 @@ import com.meeting.intelligent.service.UserService;
 import com.meeting.intelligent.utils.PageUtils;
 
 
-
 /**
- * 
- *
  * @author sukun
  * @email 1477264431@qq.com
  * @date 2022-11-27 21:01:36
@@ -30,7 +27,7 @@ public class UserController {
      * 列表
      */
     @GetMapping
-    public Result list(@RequestParam Map<String, Object> params){
+    public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = userService.queryPage(params);
 
         return Result.ok().put("data", page);
@@ -41,8 +38,8 @@ public class UserController {
      * 信息
      */
     @GetMapping("/{id}")
-    public Result info(@PathVariable("id") Long userId){
-		UserEntity user = userService.getById(userId);
+    public Result info(@PathVariable("id") Long userId) {
+        UserEntity user = userService.getById(userId);
 
         return Result.ok().put("data", user);
     }
@@ -51,8 +48,8 @@ public class UserController {
      * 保存
      */
     @PostMapping
-    public Result save(@RequestBody UserEntity user){
-		userService.save(user);
+    public Result save(@RequestBody UserEntity user) {
+        userService.save(user);
 
         return Result.ok();
     }
@@ -61,8 +58,8 @@ public class UserController {
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody UserEntity user){
-		userService.updateById(user);
+    public Result update(@RequestBody UserEntity user) {
+        userService.updateById(user);
 
         return Result.ok();
     }
@@ -71,8 +68,8 @@ public class UserController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] userIds){
-		userService.removeByIds(Arrays.asList(userIds));
+    public Result delete(@RequestBody Long[] userIds) {
+        userService.removeByIds(Arrays.asList(userIds));
 
         return Result.ok();
     }

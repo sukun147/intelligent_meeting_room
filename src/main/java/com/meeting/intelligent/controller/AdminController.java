@@ -11,10 +11,7 @@ import com.meeting.intelligent.entity.AdminEntity;
 import com.meeting.intelligent.service.AdminService;
 
 
-
 /**
- *
- *
  * @author sukun
  * @email 1477264431@qq.com
  * @date 2022-11-27 21:01:36
@@ -29,28 +26,18 @@ public class AdminController {
      * 信息
      */
     @GetMapping("/{id}")
-    public Result info(@PathVariable("id") Long adminId){
-		AdminEntity admin = adminService.getById(adminId);
+    public Result info(@PathVariable("id") Long adminId) {
+        AdminEntity admin = adminService.getById(adminId);
 
         return Result.ok().put("data", admin);
-    }
-
-    /**
-     * 保存
-     */
-    @PostMapping
-    public Result save(@RequestBody AdminEntity admin){
-		adminService.save(admin);
-
-        return Result.ok();
     }
 
     /**
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody AdminEntity admin){
-		adminService.updateById(admin);
+    public Result update(@RequestBody AdminEntity admin) {
+        adminService.updateById(admin);
 
         return Result.ok();
     }

@@ -23,10 +23,10 @@ CREATE TABLE `meeting`
     `end_time`            datetime     NOT NULL COMMENT '预计会议结束时间',
     `latest_end_time`     datetime     NOT NULL COMMENT '最晚会议结束时间',
     `participants`        json         NOT NULL COMMENT '参会人员及其签到情况',
-    `report_address`      varchar(255) NOT NULL COMMENT '会议报告地址',
-    `scheduled_period`    varchar(255) NOT NULL COMMENT '预定周期，cron格式（用于按日、周、月预定）',
+    `report_address`      varchar(255) NOT NULL DEFAULT '' COMMENT '会议报告地址',
+    `scheduled_period`    varchar(255) NOT NULL DEFAULT '' COMMENT '预定周期，cron格式（用于按日、周、月预定）',
     `meeting_status`      tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
-    `room_id`            bigint       NOT NULL COMMENT '会议室id',
+    `room_id`             bigint       NOT NULL COMMENT '会议室id',
     `meeting_description` longtext     NOT NULL COMMENT '会议描述',
     PRIMARY KEY (`meeting_id`),
     INDEX `room_id` (`room_id`) USING BTREE INVISIBLE,
@@ -42,7 +42,7 @@ CREATE TABLE `meeting_room`
     `idle_end_time`    time         NOT NULL COMMENT '空闲结束时间',
     `type_id`          integer      NOT NULL COMMENT '会议室类型',
     `room_status`      tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
-    `room_sort`        integer      NULL COMMENT '会议室排序',
+    `room_sort`        integer      NOT NULL COMMENT '会议室排序',
     PRIMARY KEY (`room_id`),
     INDEX `type_id` (`type_id`) USING BTREE INVISIBLE,
     INDEX `room_sort` (`room_sort`) USING BTREE INVISIBLE
@@ -55,7 +55,7 @@ CREATE TABLE `meeting_room_type`
     `type_description` longtext     NOT NULL COMMENT '会议室描述',
     `equipment`        json         NOT NULL COMMENT '会议室设备',
     `type_status`      tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
-    `type_sort`        integer      NULL COMMENT '会议室类型排序',
+    `type_sort`        integer      NOT NULL COMMENT '会议室类型排序',
     PRIMARY KEY (`type_id`),
     INDEX `type_sort` (`type_sort`) USING BTREE INVISIBLE
 );
@@ -68,7 +68,7 @@ CREATE TABLE `user`
     `real_name`        varchar(255) NOT NULL COMMENT '真实姓名',
     `phone`            integer      NOT NULL COMMENT '电话号码',
     `permission_level` integer      NOT NULL COMMENT '权限等级（1为普通员工）',
-    `faceinfo`         char(64)     NOT NULL COMMENT 'base64编码的图片',
+    `face_info`        char(64)     NOT NULL COMMENT 'base64编码的图片',
     `status`           tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
     PRIMARY KEY (`user_id`),
     INDEX `user` (`username`, `password`) USING BTREE INVISIBLE

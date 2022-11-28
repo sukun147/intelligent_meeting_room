@@ -13,16 +13,6 @@ public class Result extends HashMap<String, Object> implements Serializable {
     public static final int CODE_ERROR_SYSTEM = 2;
     private static final long serialVersionUID = 1L;
 
-    public Result setData(Object data) {
-        put("data", data);
-        return this;
-    }
-
-    public <T> T getData(TypeReference<T> typeReference) {
-        Object data = get("data");
-        return JSON.parseObject(JSON.toJSONString(data), typeReference);
-    }
-
     public Result() {
         put("code", CODE_SUCCESS);
         put("msg", "");
@@ -57,6 +47,16 @@ public class Result extends HashMap<String, Object> implements Serializable {
 
     public static Result ok() {
         return new Result();
+    }
+
+    public Result setData(Object data) {
+        put("data", data);
+        return this;
+    }
+
+    public <T> T getData(TypeReference<T> typeReference) {
+        Object data = get("data");
+        return JSON.parseObject(JSON.toJSONString(data), typeReference);
     }
 
     public Result put(String key, Object value) {

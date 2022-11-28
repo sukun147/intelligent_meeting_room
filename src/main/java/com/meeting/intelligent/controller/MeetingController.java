@@ -12,10 +12,7 @@ import com.meeting.intelligent.service.MeetingService;
 import com.meeting.intelligent.utils.PageUtils;
 
 
-
 /**
- * 
- *
  * @author sukun
  * @email 1477264431@qq.com
  * @date 2022-11-27 21:01:36
@@ -30,7 +27,7 @@ public class MeetingController {
      * 列表
      */
     @GetMapping
-    public Result list(@RequestParam Map<String, Object> params){
+    public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = meetingService.queryPage(params);
 
         return Result.ok().put("data", page);
@@ -41,8 +38,8 @@ public class MeetingController {
      * 信息
      */
     @GetMapping("/{id}")
-    public Result info(@PathVariable("id") Long meetingId){
-		MeetingEntity meeting = meetingService.getById(meetingId);
+    public Result info(@PathVariable("id") Long meetingId) {
+        MeetingEntity meeting = meetingService.getById(meetingId);
 
         return Result.ok().put("data", meeting);
     }
@@ -51,8 +48,10 @@ public class MeetingController {
      * 保存
      */
     @PostMapping
-    public Result save(@RequestBody MeetingEntity meeting){
-		meetingService.save(meeting);
+    public Result save(@RequestBody MeetingEntity meeting) {
+
+
+        meetingService.save(meeting);
 
         return Result.ok();
     }
@@ -61,8 +60,8 @@ public class MeetingController {
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody MeetingEntity meeting){
-		meetingService.updateById(meeting);
+    public Result update(@RequestBody MeetingEntity meeting) {
+        meetingService.updateById(meeting);
 
         return Result.ok();
     }
@@ -71,8 +70,8 @@ public class MeetingController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] meetingIds){
-		meetingService.removeByIds(Arrays.asList(meetingIds));
+    public Result delete(@RequestBody Long[] meetingIds) {
+        meetingService.removeByIds(Arrays.asList(meetingIds));
 
         return Result.ok();
     }

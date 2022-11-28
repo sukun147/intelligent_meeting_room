@@ -3,7 +3,7 @@
 
 <mapper namespace="com.meeting.intelligent.dao.MeetingRoomTypeDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.meeting.intelligent.entity.MeetingRoomTypeEntity" id="meetingRoomTypeMap">
         <result property="typeId" column="type_id"/>
         <result property="typeName" column="type_name"/>

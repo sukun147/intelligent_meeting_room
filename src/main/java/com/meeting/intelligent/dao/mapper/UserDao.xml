@@ -3,7 +3,7 @@
 
 <mapper namespace="com.meeting.intelligent.dao.UserDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.meeting.intelligent.entity.UserEntity" id="userMap">
         <result property="userId" column="user_id"/>
         <result property="username" column="username"/>
@@ -11,7 +11,7 @@
         <result property="realName" column="real_name"/>
         <result property="phone" column="phone"/>
         <result property="permissionLevel" column="permission_level"/>
-        <result property="faceinfo" column="faceinfo"/>
+        <result property="faceInfo" column="face_info"/>
         <result property="status" column="status"/>
     </resultMap>
 
