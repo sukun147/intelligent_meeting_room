@@ -1,5 +1,6 @@
 package com.meeting.intelligent.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -47,5 +48,10 @@ public class UserEntity implements Serializable {
      * 启用状态（0为禁用，1为启用）
      */
     private Integer status;
+    /**
+     * 人脸照片（base64）
+     */
+    @TableField(exist = false)
+    private String facePhoto;
 
 }
