@@ -19,9 +19,6 @@
     <el-form-item label="权限等级（1为普通员工）" prop="permissionLevel">
       <el-input v-model="dataForm.permissionLevel" placeholder="权限等级（1为普通员工）"></el-input>
     </el-form-item>
-    <el-form-item label="base64编码的图片" prop="faceInfo">
-      <el-input v-model="dataForm.faceInfo" placeholder="base64编码的图片"></el-input>
-    </el-form-item>
     <el-form-item label="启用状态（0为禁用，1为启用）" prop="status">
       <el-input v-model="dataForm.status" placeholder="启用状态（0为禁用，1为启用）"></el-input>
     </el-form-item>
@@ -45,7 +42,6 @@
           realName: '',
           phone: '',
           permissionLevel: '',
-          faceInfo: '',
           status: ''
         },
         dataRule: {
@@ -63,9 +59,6 @@
           ],
           permissionLevel: [
             { required: true, message: '权限等级（1为普通员工）不能为空', trigger: 'blur' }
-          ],
-          faceInfo: [
-            { required: true, message: 'base64编码的图片不能为空', trigger: 'blur' }
           ],
           status: [
             { required: true, message: '启用状态（0为禁用，1为启用）不能为空', trigger: 'blur' }
@@ -91,7 +84,6 @@
                 this.dataForm.realName = data.user.realName
                 this.dataForm.phone = data.user.phone
                 this.dataForm.permissionLevel = data.user.permissionLevel
-                this.dataForm.faceInfo = data.user.faceInfo
                 this.dataForm.status = data.user.status
               }
             })
@@ -112,7 +104,6 @@
                 'realName': this.dataForm.realName,
                 'phone': this.dataForm.phone,
                 'permissionLevel': this.dataForm.permissionLevel,
-                'faceInfo': this.dataForm.faceInfo,
                 'status': this.dataForm.status
               })
             }).then(({data}) => {

@@ -59,12 +59,6 @@
         label="权限等级（1为普通员工）">
       </el-table-column>
       <el-table-column
-        prop="faceInfo"
-        header-align="center"
-        align="center"
-        label="base64编码的图片">
-      </el-table-column>
-      <el-table-column
         prop="status"
         header-align="center"
         align="center"

@@ -68,7 +68,6 @@ CREATE TABLE `user`
     `real_name`        varchar(255) NOT NULL COMMENT '真实姓名',
     `phone`            integer      NOT NULL COMMENT '电话号码',
     `permission_level` integer      NOT NULL COMMENT '权限等级（1为普通员工）',
-    `face_info`        char(64)     NOT NULL COMMENT 'base64编码的图片',
     `status`           tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
     PRIMARY KEY (`user_id`),
     INDEX `user` (`username`, `password`) USING BTREE INVISIBLE
