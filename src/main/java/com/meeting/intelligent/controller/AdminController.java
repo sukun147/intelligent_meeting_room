@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.meeting.intelligent.entity.AdminEntity;
 import com.meeting.intelligent.service.AdminService;
-import com.meeting.intelligent.utils.PageUtils;
 
 
 
@@ -55,15 +54,4 @@ public class AdminController {
 
         return Result.ok();
     }
-
-    /**
-     * 删除
-     */
-    @DeleteMapping
-    public Result delete(@RequestBody Long[] adminIds){
-		adminService.removeByIds(Arrays.asList(adminIds));
-
-        return Result.ok();
-    }
-
 }

@@ -41,7 +41,7 @@ public class UserController {
      * 信息
      */
     @GetMapping("/{id}")
-    public Result info(@PathVariable("userId") Long userId){
+    public Result info(@PathVariable("id") Long userId){
 		UserEntity user = userService.getById(userId);
 
         return Result.ok().put("data", user);

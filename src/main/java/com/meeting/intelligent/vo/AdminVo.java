@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class AdminRespVo {
+public class AdminVo {
 
     /**
      * 管理员id

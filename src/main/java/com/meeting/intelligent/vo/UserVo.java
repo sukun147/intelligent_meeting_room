@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class UserRespVo {
+public class UserVo {
 
     /**
      * 员工id
@@ -33,7 +33,7 @@ public class UserRespVo {
     /**
      * base64编码的图片
      */
-    private String faceinfo;
+    private String faceInfo;
     /**
      * 启用状态（0为禁用，1为启用）
      */

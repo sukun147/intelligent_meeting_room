@@ -16,14 +16,4 @@ import com.meeting.intelligent.service.AdminService;
 @Service("adminService")
 public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> implements AdminService {
 
-    @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        IPage<AdminEntity> page = this.page(
-                new Query<AdminEntity>().getPage(params),
-                new QueryWrapper<AdminEntity>()
-        );
-
-        return new PageUtils(page);
-    }
-
 }

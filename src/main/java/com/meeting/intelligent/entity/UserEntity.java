@@ -47,7 +47,7 @@ public class UserEntity implements Serializable {
 	/**
 	 * base64编码的图片
 	 */
-	private String faceinfo;
+	private String faceInfo;
 	/**
 	 * 启用状态（0为禁用，1为启用）
 	 */

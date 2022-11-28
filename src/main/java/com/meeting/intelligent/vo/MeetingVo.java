@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class MeetingRespVo {
+public class MeetingVo {
 
     /**
      * 会议id

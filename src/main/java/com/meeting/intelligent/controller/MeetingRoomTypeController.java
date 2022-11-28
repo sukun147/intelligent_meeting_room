@@ -41,7 +41,7 @@ public class MeetingRoomTypeController {
      * 信息
      */
     @GetMapping("/{id}")
-    public Result info(@PathVariable("typeId") Long typeId){
+    public Result info(@PathVariable("id") Long typeId){
 		MeetingRoomTypeEntity meetingRoomType = meetingRoomTypeService.getById(typeId);
 
         return Result.ok().put("data", meetingRoomType);
