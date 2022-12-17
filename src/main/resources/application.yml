@@ -1,8 +1,8 @@
 spring:
   datasource:
-    username: root
-    password: sukun031015
-    url: jdbc:mysql:///imrms?serverTimezone=Asia/Shanghai
+    username: ENC(sm3Avk0/y0wqBI7KXMIyx5wJX9Y+vR2LvREJScc7KtcJ4ZHBOnDLvw1mhbxcbIJR)
+    password: ENC(VCNbMChTp2K9pBJRXF9RnzNpCTeJ/DjeX45PqsLPvgG2E9VkBvdM/1qPkhORbnbZ)
+    url: ENC(FVLALUydww2Zv4Qq+tKARXRzuwrz8aexNr6OVRQ5altyFXo6Frmzl290pF0t0uNnkLFIB+yDLHLQchnY7CrLckXcc/KypvQUo4OaWk2qMkFmEFD+cBUWwtS/1RQuhG0P)
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
