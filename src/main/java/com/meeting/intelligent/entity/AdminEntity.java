@@ -31,9 +31,13 @@ public class AdminEntity implements Serializable {
      */
     private String password;
     /**
+     * 盐
+     */
+    private String salt;
+    /**
      * 手机号
      */
-    private Integer phoneNumber;
+    private String phoneNumber;
     /**
      * 邮箱
      */

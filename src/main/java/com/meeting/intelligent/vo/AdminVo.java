@@ -21,7 +21,7 @@ public class AdminVo {
     /**
      * 手机号
      */
-    private Integer phoneNumber;
+    private String phoneNumber;
     /**
      * 邮箱
      */

@@ -1,23 +1,31 @@
-DROP DATABASE IF EXISTS `imrms`;
+DROP
+    DATABASE IF EXISTS `imrms`;
 
-CREATE DATABASE `imrms`;
+CREATE
+    DATABASE `imrms`;
 
-USE `imrms`;
+USE
+    `imrms`;
 
 CREATE TABLE `admin`
 (
     `admin_id`     bigint       NOT NULL COMMENT '管理员id',
-    `username`     varchar(255) NOT NULL DEFAULT 'admin' COMMENT '用户名',
-    `password`     varchar(255) NOT NULL DEFAULT 'admin' COMMENT '密码',
-    `phone_number` integer      NOT NULL COMMENT '手机号',
+    `username`     varchar(255) NOT NULL COMMENT '用户名',
+    `password`     varchar(255) NOT NULL COMMENT '加密后密码',
+    `salt`         varchar(255) NOT NULL COMMENT '盐值',
+    `phone_number` char(11)     NOT NULL COMMENT '手机号',
     `email`        varchar(255) NOT NULL COMMENT '邮箱',
     PRIMARY KEY (`admin_id`),
     INDEX `admin` (`username`, `password`) USING BTREE INVISIBLE
 );
 
+INSERT INTO `admin`
+values (1, 'admin', '732e0b55efe2204e03c7e371eefe9523', 'e0d50b3a-74cd-4fc5-a602-afaf782b3fcc', '11111111111',
+        'default@email.com');
+
 CREATE TABLE `meeting`
 (
-    `meeting_id`          bigint       NOT NULL COMMENT '会议id',
+    `meeting_id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '会议id',
     `title`               varchar(255) NOT NULL COMMENT '会议标题',
     `start_time`          datetime     NOT NULL COMMENT '会议开始时间',
     `end_time`            datetime     NOT NULL COMMENT '预计会议结束时间',
@@ -35,7 +43,7 @@ CREATE TABLE `meeting`
 
 CREATE TABLE `meeting_room`
 (
-    `room_id`          bigint       NOT NULL COMMENT '编号',
+    `room_id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '编号',
     `position`         varchar(255) NOT NULL COMMENT '地址',
     `permission_level` integer      NOT NULL COMMENT '允许权限等级',
     `idle_start_time`  time         NOT NULL COMMENT '空闲开始时间',
@@ -50,7 +58,7 @@ CREATE TABLE `meeting_room`
 
 CREATE TABLE `meeting_room_type`
 (
-    `type_id`          bigint       NOT NULL COMMENT '类型id',
+    `type_id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '类型id',
     `type_name`        varchar(255) NOT NULL COMMENT '会议室名称',
     `type_description` longtext     NOT NULL COMMENT '会议室描述',
     `equipment`        json         NOT NULL COMMENT '会议室设备',
@@ -64,9 +72,10 @@ CREATE TABLE `user`
 (
     `user_id`          bigint       NOT NULL AUTO_INCREMENT COMMENT '员工id',
     `username`         varchar(255) NOT NULL COMMENT '用户名',
-    `password`         varchar(255) NOT NULL COMMENT '密码',
+    `password`         varchar(255) NOT NULL COMMENT '加密后密码',
+    `salt`             varchar(255) NOT NULL COMMENT '盐值',
     `real_name`        varchar(255) NOT NULL COMMENT '真实姓名',
-    `phone`            integer      NOT NULL COMMENT '电话号码',
+    `phone`            char(11)     NOT NULL COMMENT '电话号码',
     `permission_level` integer      NOT NULL COMMENT '权限等级（1为普通员工）',
     `status`           tinyint      NOT NULL COMMENT '启用状态（0为禁用，1为启用）',
     PRIMARY KEY (`user_id`),

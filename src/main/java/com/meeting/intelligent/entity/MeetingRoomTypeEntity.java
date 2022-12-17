@@ -1,6 +1,8 @@
 package com.meeting.intelligent.entity;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.OrderBy;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -22,7 +24,7 @@ public class MeetingRoomTypeEntity implements Serializable {
     /**
      * 类型id
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long typeId;
     /**
      * 会议室名称
@@ -43,6 +45,7 @@ public class MeetingRoomTypeEntity implements Serializable {
     /**
      * 会议室类型排序
      */
+    @OrderBy
     private Integer typeSort;
 
 }

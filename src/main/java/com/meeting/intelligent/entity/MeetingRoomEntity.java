@@ -1,5 +1,7 @@
 package com.meeting.intelligent.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.OrderBy;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -21,7 +23,7 @@ public class MeetingRoomEntity implements Serializable {
     /**
      * 编号
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long roomId;
     /**
      * 地址
@@ -50,6 +52,7 @@ public class MeetingRoomEntity implements Serializable {
     /**
      * 会议室排序
      */
+    @OrderBy
     private Integer roomSort;
 
 }

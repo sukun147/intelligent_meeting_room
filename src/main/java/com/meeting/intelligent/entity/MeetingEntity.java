@@ -1,6 +1,7 @@
 package com.meeting.intelligent.entity;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -24,7 +25,7 @@ public class MeetingEntity implements Serializable {
     /**
      * 会议id
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long meetingId;
     /**
      * 会议标题

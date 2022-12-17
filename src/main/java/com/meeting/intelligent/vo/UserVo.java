@@ -25,7 +25,7 @@ public class UserVo {
     /**
      * 电话号码
      */
-    private Integer phone;
+    private String phone;
     /**
      * 权限等级（1为普通员工）
      */

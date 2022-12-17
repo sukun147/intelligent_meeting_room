@@ -1,5 +1,6 @@
 package com.meeting.intelligent.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -22,7 +23,7 @@ public class UserEntity implements Serializable {
     /**
      * 员工id
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long userId;
     /**
      * 用户名
@@ -33,13 +34,17 @@ public class UserEntity implements Serializable {
      */
     private String password;
     /**
+     * 盐
+     */
+    private String salt;
+    /**
      * 真实姓名
      */
     private String realName;
     /**
      * 电话号码
      */
-    private Integer phone;
+    private String phone;
     /**
      * 权限等级（1为普通员工）
      */

@@ -1,10 +1,7 @@
 package com.meeting.intelligent.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.entity.AdminEntity;
-
-import java.util.Map;
 
 /**
  * @author sukun
@@ -13,5 +10,6 @@ import java.util.Map;
  */
 public interface AdminService extends IService<AdminEntity> {
 
+    boolean login(AdminEntity adminEntity);
 }
 

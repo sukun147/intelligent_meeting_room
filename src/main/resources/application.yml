@@ -33,3 +33,8 @@ sa-token:
 logging:
   level:
     com.imrms.com.imrms.intelligent_meeting_room: DEBUG
+
+BaiduAip:
+  appId: ENC(2IoCyGnxO2OqNuAKCsW/JwCVmOqZNAtYx/qqKzWIV+EdfLqn7aReli2SpFxQqNX0)
+  apiKey: ENC(WOdujdaYBMVIkFXdShlCjMxQdtlxZ/nD+ttPhWKG4M8FP5iJ/jyRZb7fTQuiyedZy7h+yrzfz6jA9UxAEHZ8EQ==)
+  secretKey: ENC(sjeAIiu+VYoz//q9oqFz95Z0rcIiSXTRK5GBcwm2cOsH7aEO2RgNtnEpo+3xJWFficGxSU7cIaT1ns4vIB4K2G1ktaoTcVJ68SqXUub4vl8=)
