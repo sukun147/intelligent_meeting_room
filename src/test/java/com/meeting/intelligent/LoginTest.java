@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.DigestUtils;
-
-import java.util.Arrays;
-import java.util.UUID;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @RunWith(SpringRunner.class)
@@ -16,12 +13,11 @@ class LoginTest {
 
     @Test
     void cryptTest() {
-        String salt = UUID.randomUUID().toString();
-        System.out.println(salt);
-        String rawPwd = DigestUtils.md5DigestAsHex("admin".getBytes());
-        System.out.println(rawPwd);
-        String cryptPwd = DigestUtils.md5DigestAsHex((rawPwd + salt).getBytes());
-        System.out.println(cryptPwd);
+        String pwd = "21232f297a57a5a743894a0e4a801fc3"; // admin的MD5摘要
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPwd = encoder.encode(pwd);
+        System.out.println(encodedPwd);
+        System.out.println(encoder.matches(pwd, encodedPwd));
     }
 
 }

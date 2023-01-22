@@ -26,13 +26,9 @@ public class MeetingVo {
      */
     private Date startTime;
     /**
-     * 预计会议结束时间
+     * 会议结束时间
      */
     private Date endTime;
-    /**
-     * 最晚会议结束时间
-     */
-    private Date latestEndTime;
     /**
      * 参会人员及其签到情况
      */
@@ -61,4 +57,8 @@ public class MeetingVo {
      * 会议描述
      */
     private String meetingDescription;
+    /**
+     * 是否接收调剂
+     */
+    private Boolean AdjustAble;
 }

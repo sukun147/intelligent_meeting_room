@@ -3,6 +3,7 @@ package com.meeting.intelligent.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.entity.MeetingEntity;
+import com.meeting.intelligent.vo.MeetingVo;
 
 import java.util.Map;
 
@@ -14,5 +15,7 @@ import java.util.Map;
 public interface MeetingService extends IService<MeetingEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void bookMeeting(MeetingVo MeetingVo);
 }
 

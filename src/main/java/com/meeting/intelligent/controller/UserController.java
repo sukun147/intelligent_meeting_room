@@ -1,16 +1,20 @@
 package com.meeting.intelligent.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import cn.dev33.satoken.stp.StpUtil;
-import com.meeting.intelligent.utils.Result;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.service.UserService;
 import com.meeting.intelligent.utils.PageUtils;
+import com.meeting.intelligent.utils.Result;
+import com.meeting.intelligent.vo.RegisterVo;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.LOGIN_ACCOUNT_PASSWORD_EXCEPTION;
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.PHOTO_EXCEPTION;
 
 
 /**
@@ -25,11 +29,11 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Result register(@RequestBody UserEntity userEntity) {
-        if (userService.register(userEntity)) {
-            return Result.ok();
+    public Result register(@RequestBody @Valid RegisterVo registerVo) {
+        if (userService.register(registerVo)) {
+            return Result.success();
         }
-        return Result.error("请更换人脸照片");
+        return Result.error(PHOTO_EXCEPTION.getCode(), PHOTO_EXCEPTION.getMsg());
     }
 
     @PostMapping("/login")
@@ -37,9 +41,15 @@ public class UserController {
         Long userId = userService.login(userEntity);
         if (userId != null) {
             StpUtil.login(userId);
-            return Result.ok();
+            return Result.success();
         }
-        return Result.error("用户名或密码错误");
+        return Result.error(LOGIN_ACCOUNT_PASSWORD_EXCEPTION.getCode(), LOGIN_ACCOUNT_PASSWORD_EXCEPTION.getMsg());
+    }
+
+    @GetMapping("/logout")
+    public Result logout() {
+        StpUtil.logout();
+        return Result.success();
     }
 
     /**
@@ -48,8 +58,7 @@ public class UserController {
     @GetMapping
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = userService.queryPage(params);
-
-        return Result.ok().put("data", page);
+        return Result.success().put("data", page);
     }
 
 
@@ -59,28 +68,25 @@ public class UserController {
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long userId) {
         UserEntity user = userService.getById(userId);
-
-        return Result.ok().put("data", user);
+        return Result.success().put("data", user);
     }
 
     /**
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody UserEntity user) {
+    public Result update(@RequestBody @Valid UserEntity user) {
         userService.updateById(user);
-
-        return Result.ok();
+        return Result.success();
     }
 
     /**
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] userIds) {
+    public Result delete(@RequestBody @Valid Long[] userIds) {
         userService.removeByIds(Arrays.asList(userIds));
-
-        return Result.ok();
+        return Result.success();
     }
 
 }

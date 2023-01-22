@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.meeting.intelligent.utils.Result;
+import com.meeting.intelligent.vo.MeetingVo;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +31,7 @@ public class MeetingController {
     @GetMapping
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = meetingService.queryPage(params);
-
-        return Result.ok().put("data", page);
+        return Result.success().setData(page);
     }
 
 
@@ -40,30 +41,25 @@ public class MeetingController {
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long meetingId) {
         MeetingEntity meeting = meetingService.getById(meetingId);
-
-        return Result.ok().put("data", meeting);
+        return Result.success().setData(meeting);
     }
 
     /**
      * 保存
      */
     @PostMapping
-    public Result save(@RequestBody MeetingEntity meeting) {
-
-
-        meetingService.save(meeting);
-
-        return Result.ok();
+    public Result save(@RequestBody @Valid MeetingVo meetingVo) {
+        meetingService.bookMeeting(meetingVo);
+        return Result.success();
     }
 
     /**
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody MeetingEntity meeting) {
+    public Result update(@RequestBody @Valid MeetingEntity meeting) {
         meetingService.updateById(meeting);
-
-        return Result.ok();
+        return Result.success();
     }
 
     /**
@@ -72,8 +68,7 @@ public class MeetingController {
     @DeleteMapping
     public Result delete(@RequestBody Long[] meetingIds) {
         meetingService.removeByIds(Arrays.asList(meetingIds));
-
-        return Result.ok();
+        return Result.success();
     }
 
 }

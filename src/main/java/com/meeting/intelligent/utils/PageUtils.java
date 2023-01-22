@@ -2,10 +2,12 @@ package com.meeting.intelligent.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
 public class PageUtils implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     /**
      * 总记录数

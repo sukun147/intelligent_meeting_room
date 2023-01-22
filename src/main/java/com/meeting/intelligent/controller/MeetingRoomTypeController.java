@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.meeting.intelligent.utils.Result;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +30,7 @@ public class MeetingRoomTypeController {
     @GetMapping
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = meetingRoomTypeService.queryPage(params);
-
-        return Result.ok().put("data", page);
+        return Result.success().setData(page);
     }
 
 
@@ -40,28 +40,25 @@ public class MeetingRoomTypeController {
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long typeId) {
         MeetingRoomTypeEntity meetingRoomType = meetingRoomTypeService.getById(typeId);
-
-        return Result.ok().put("data", meetingRoomType);
+        return Result.success().setData(meetingRoomType);
     }
 
     /**
      * 保存
      */
     @PostMapping
-    public Result save(@RequestBody MeetingRoomTypeEntity meetingRoomType) {
+    public Result save(@RequestBody @Valid MeetingRoomTypeEntity meetingRoomType) {
         meetingRoomTypeService.save(meetingRoomType);
-
-        return Result.ok();
+        return Result.success();
     }
 
     /**
      * 修改
      */
     @PutMapping
-    public Result update(@RequestBody MeetingRoomTypeEntity meetingRoomType) {
+    public Result update(@RequestBody @Valid MeetingRoomTypeEntity meetingRoomType) {
         meetingRoomTypeService.updateById(meetingRoomType);
-
-        return Result.ok();
+        return Result.success();
     }
 
     /**
@@ -70,8 +67,7 @@ public class MeetingRoomTypeController {
     @DeleteMapping
     public Result delete(@RequestBody Long[] typeIds) {
         meetingRoomTypeService.removeByIds(Arrays.asList(typeIds));
-
-        return Result.ok();
+        return Result.success();
     }
 
 }

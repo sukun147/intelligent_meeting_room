@@ -1,15 +1,9 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- * <p>
- * https://www.renren.io
- * <p>
- * 版权所有，侵权必究！
- */
-
 package com.meeting.intelligent.xss;
 
-import com.meeting.intelligent.Exception.RRException;
+import com.meeting.intelligent.Exception.GlobalException;
 import org.apache.commons.lang3.StringUtils;
+
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ILLEGAL_CHARACTERS_EXCEPTION;
 
 /**
  * SQL过滤
@@ -39,7 +33,7 @@ public class SQLFilter {
         //判断是否包含非法字符
         for (String keyword : keywords) {
             if (str.contains(keyword)) {
-                throw new RRException("包含非法字符");
+                throw new GlobalException(ILLEGAL_CHARACTERS_EXCEPTION.getMsg(), ILLEGAL_CHARACTERS_EXCEPTION.getCode());
             }
         }
 

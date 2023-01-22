@@ -3,27 +3,24 @@ package com.meeting.intelligent.utils;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Result extends HashMap<String, Object> implements Serializable {
-    public static final int CODE_SUCCESS = 0;
-    public static final int CODE_ERROR_DATA = 1;
-    public static final int CODE_ERROR_SYSTEM = 2;
-    private static final long serialVersionUID = 1L;
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.UNKNOWN_EXCEPTION;
 
-    public Result() {
-        put("code", CODE_SUCCESS);
+public class Result extends HashMap<String, Object> {
+
+    private Result() {
+        put("code", 0);
         put("msg", "");
     }
 
     public static Result error() {
-        return error(CODE_ERROR_SYSTEM, "系统异常，请稍后再试");
+        return error(UNKNOWN_EXCEPTION.getCode(), UNKNOWN_EXCEPTION.getMsg());
     }
 
     public static Result error(String msg) {
-        return error(CODE_ERROR_DATA, msg);
+        return error(UNKNOWN_EXCEPTION.getCode(), msg);
     }
 
     public static Result error(int code, String msg) {
@@ -33,19 +30,19 @@ public class Result extends HashMap<String, Object> implements Serializable {
         return Result;
     }
 
-    public static Result ok(String msg) {
+    public static Result success(String msg) {
         Result Result = new Result();
         Result.put("msg", msg);
         return Result;
     }
 
-    public static Result ok(Map<String, Object> map) {
+    public static Result success(Map<String, Object> map) {
         Result Result = new Result();
         Result.putAll(map);
         return Result;
     }
 
-    public static Result ok() {
+    public static Result success() {
         return new Result();
     }
 

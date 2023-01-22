@@ -21,4 +21,8 @@ public class Constant {
      * 升序
      */
     public static final String ASC = "asc";
+    /**
+     * 验证码缓存前缀
+     */
+    public static final String CAPTCHA_CODE_CACHE_PREFIX="captcha_code_";
 }

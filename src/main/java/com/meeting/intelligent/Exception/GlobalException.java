@@ -1,39 +1,36 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- * <p>
- * https://www.renren.io
- * <p>
- * 版权所有，侵权必究！
- */
-
 package com.meeting.intelligent.Exception;
+
+import java.io.Serial;
+
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.UNKNOWN_EXCEPTION;
 
 /**
  * 自定义异常
  */
-public class RRException extends RuntimeException {
+public class GlobalException extends RuntimeException {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String msg;
-    private int code = 500;
+    private int code = UNKNOWN_EXCEPTION.getCode();
 
-    public RRException(String msg) {
+    public GlobalException(String msg) {
         super(msg);
         this.msg = msg;
     }
 
-    public RRException(String msg, Throwable e) {
+    public GlobalException(String msg, Throwable e) {
         super(msg, e);
         this.msg = msg;
     }
 
-    public RRException(String msg, int code) {
+    public GlobalException(String msg, int code) {
         super(msg);
         this.msg = msg;
         this.code = code;
     }
 
-    public RRException(String msg, int code, Throwable e) {
+    public GlobalException(String msg, int code, Throwable e) {
         super(msg, e);
         this.msg = msg;
         this.code = code;

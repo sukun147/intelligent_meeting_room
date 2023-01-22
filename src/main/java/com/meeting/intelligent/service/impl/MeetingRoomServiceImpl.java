@@ -22,7 +22,7 @@ public class MeetingRoomServiceImpl extends ServiceImpl<MeetingRoomDao, MeetingR
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<MeetingRoomEntity> page = this.page(
             new Query<MeetingRoomEntity>().getPage(params),
-            new QueryWrapper<MeetingRoomEntity>()
+            new QueryWrapper<>()
         );
 
         return new PageUtils(page);
