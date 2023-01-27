@@ -1,5 +1,6 @@
 package com.meeting.intelligent.controller;
 
+import cn.dev33.satoken.annotation.SaCheckSafe;
 import cn.dev33.satoken.stp.StpUtil;
 import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.service.UserService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Map;
 
-import static com.meeting.intelligent.Exception.ExceptionCodeEnum.LOGIN_ACCOUNT_PASSWORD_EXCEPTION;
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ACCOUNT_PASSWORD_WRONG_EXCEPTION;
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.PHOTO_EXCEPTION;
 
 
@@ -43,7 +44,7 @@ public class UserController {
             StpUtil.login(userId);
             return Result.success();
         }
-        return Result.error(LOGIN_ACCOUNT_PASSWORD_EXCEPTION.getCode(), LOGIN_ACCOUNT_PASSWORD_EXCEPTION.getMsg());
+        return Result.error(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg());
     }
 
     @GetMapping("/logout")
@@ -74,6 +75,7 @@ public class UserController {
     /**
      * 修改
      */
+    @SaCheckSafe
     @PutMapping
     public Result update(@RequestBody @Valid UserEntity user) {
         userService.updateById(user);
@@ -86,6 +88,13 @@ public class UserController {
     @DeleteMapping
     public Result delete(@RequestBody @Valid Long[] userIds) {
         userService.removeByIds(Arrays.asList(userIds));
+        return Result.success();
+    }
+
+    @PostMapping("/openSafe")
+    public Result openSafe(@RequestBody String password) {
+        userService.checkPassword(password);
+        StpUtil.openSafe(120);
         return Result.success();
     }
 

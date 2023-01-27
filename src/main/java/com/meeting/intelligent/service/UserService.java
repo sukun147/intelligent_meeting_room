@@ -6,6 +6,7 @@ import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.vo.RegisterVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,5 +25,9 @@ public interface UserService extends IService<UserEntity> {
     void checkPhoneUnique(String phone);
 
     void checkUsernameUnique(String name);
+
+    void checkPassword(String password);
+
+    List<String> getPhones(List<Long> userIds);
 }
 

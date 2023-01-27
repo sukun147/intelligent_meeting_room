@@ -1,5 +1,6 @@
 package com.meeting.intelligent.vo;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,19 +21,26 @@ public class MeetingVo {
     /**
      * 会议标题
      */
+    @NotBlank(message = "会议标题不能为空")
+    @Size(max = 30, message = "会议标题不能超过30个字符")
     private String title;
     /**
      * 会议开始时间
      */
+    @NotNull(message = "会议开始时间不能为空")
+    @Future(message = "会议开始时间必须大于当前时间")
     private Date startTime;
     /**
      * 会议结束时间
      */
+    @Future(message = "会议结束时间必须大于当前时间")
+    @NotNull(message = "会议结束时间不能为空")
     private Date endTime;
     /**
      * 参会人员及其签到情况
      */
-    private List<Participants> participants;
+    @NotEmpty(message = "参会人员不能为空")
+    private List<Participant> participants;
     /**
      * 会议报告地址
      */
@@ -48,6 +56,7 @@ public class MeetingVo {
     /**
      * 会议室id
      */
+    @NotNull(message = "会议室id不能为空")
     private Long roomId;
     /**
      * 会议室地址
@@ -60,5 +69,6 @@ public class MeetingVo {
     /**
      * 是否接收调剂
      */
-    private Boolean AdjustAble;
+    @NotNull(message = "是否接收调剂不能为空")
+    private Boolean adjustAble;
 }

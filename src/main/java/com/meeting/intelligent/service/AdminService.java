@@ -2,6 +2,7 @@ package com.meeting.intelligent.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.meeting.intelligent.entity.AdminEntity;
+import com.meeting.intelligent.vo.LoginVo;
 
 /**
  * @author sukun
@@ -10,6 +11,8 @@ import com.meeting.intelligent.entity.AdminEntity;
  */
 public interface AdminService extends IService<AdminEntity> {
 
-    boolean login(AdminEntity adminEntity);
+    void login(LoginVo loginVo);
+
+    void checkPassword(String password);
 }
 

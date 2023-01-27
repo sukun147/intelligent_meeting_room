@@ -1,5 +1,9 @@
 package com.meeting.intelligent.vo;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -9,11 +13,6 @@ import lombok.Data;
  */
 @Data
 public class AdminVo {
-
-    /**
-     * 管理员id
-     */
-    private Long adminId;
     /**
      * 用户名
      */

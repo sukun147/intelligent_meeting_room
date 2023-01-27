@@ -39,5 +39,6 @@ public class RegisterVo {
     /**
      * 人脸照片（base64）
      */
+    @NotBlank(message = "人脸照片不能为空")
     private String facePhoto;
 }

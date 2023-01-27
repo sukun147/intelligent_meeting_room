@@ -3,7 +3,7 @@ package com.meeting.intelligent.vo;
 import lombok.Data;
 
 @Data
-public class Participants {
+public class Participant {
 
     /**
      * 参会人员id

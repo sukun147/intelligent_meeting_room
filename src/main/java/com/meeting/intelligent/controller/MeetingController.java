@@ -49,7 +49,7 @@ public class MeetingController {
      */
     @PostMapping
     public Result save(@RequestBody @Valid MeetingVo meetingVo) {
-        meetingService.bookMeeting(meetingVo);
+        meetingService.reserveMeeting(meetingVo);
         return Result.success();
     }
 
@@ -66,7 +66,7 @@ public class MeetingController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] meetingIds) {
+    public Result delete(@RequestParam Long[] meetingIds) {
         meetingService.removeByIds(Arrays.asList(meetingIds));
         return Result.success();
     }

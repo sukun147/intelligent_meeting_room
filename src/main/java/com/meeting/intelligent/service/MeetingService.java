@@ -16,6 +16,6 @@ public interface MeetingService extends IService<MeetingEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    void bookMeeting(MeetingVo MeetingVo);
+    void reserveMeeting(MeetingVo MeetingVo);
 }
 
