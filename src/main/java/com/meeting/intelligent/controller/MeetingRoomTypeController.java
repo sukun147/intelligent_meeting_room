@@ -1,16 +1,16 @@
 package com.meeting.intelligent.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import cn.dev33.satoken.annotation.SaCheckRole;
+import com.meeting.intelligent.entity.MeetingRoomTypeEntity;
+import com.meeting.intelligent.service.MeetingRoomTypeService;
+import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.meeting.intelligent.entity.MeetingRoomTypeEntity;
-import com.meeting.intelligent.service.MeetingRoomTypeService;
-import com.meeting.intelligent.utils.PageUtils;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,7 +27,7 @@ public class MeetingRoomTypeController {
     /**
      * 列表
      */
-    @GetMapping
+    @GetMapping("/list")
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = meetingRoomTypeService.queryPage(params);
         return Result.success().setData(page);
@@ -47,6 +47,7 @@ public class MeetingRoomTypeController {
      * 保存
      */
     @PostMapping
+    @SaCheckRole("admin")
     public Result save(@RequestBody @Valid MeetingRoomTypeEntity meetingRoomType) {
         meetingRoomTypeService.save(meetingRoomType);
         return Result.success();
@@ -56,6 +57,7 @@ public class MeetingRoomTypeController {
      * 修改
      */
     @PutMapping
+    @SaCheckRole("admin")
     public Result update(@RequestBody @Valid MeetingRoomTypeEntity meetingRoomType) {
         meetingRoomTypeService.updateById(meetingRoomType);
         return Result.success();
@@ -65,8 +67,9 @@ public class MeetingRoomTypeController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] typeIds) {
-        meetingRoomTypeService.removeByIds(Arrays.asList(typeIds));
+    @SaCheckRole("admin")
+    public Result delete(@RequestParam("id") List<Long> typeIds) {
+        meetingRoomTypeService.deleteTypes(typeIds);
         return Result.success();
     }
 

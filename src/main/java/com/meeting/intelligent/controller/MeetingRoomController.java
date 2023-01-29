@@ -1,16 +1,17 @@
 package com.meeting.intelligent.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import cn.dev33.satoken.annotation.SaCheckRole;
+import com.meeting.intelligent.entity.MeetingRoomEntity;
+import com.meeting.intelligent.service.MeetingRoomService;
+import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
+import com.meeting.intelligent.vo.MeetingRoomRespVo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.meeting.intelligent.entity.MeetingRoomEntity;
-import com.meeting.intelligent.service.MeetingRoomService;
-import com.meeting.intelligent.utils.PageUtils;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,7 +28,7 @@ public class MeetingRoomController {
     /**
      * 列表
      */
-    @GetMapping
+    @GetMapping("/list")
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = meetingRoomService.queryPage(params);
         return Result.success().setData(page);
@@ -39,16 +40,17 @@ public class MeetingRoomController {
      */
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long roomId) {
-        MeetingRoomEntity meetingRoom = meetingRoomService.getById(roomId);
-        return Result.success().setData(meetingRoom);
+        MeetingRoomRespVo meetingRoomRespVo = meetingRoomService.info(roomId);
+        return Result.success().setData(meetingRoomRespVo);
     }
 
     /**
      * 保存
      */
     @PostMapping
+    @SaCheckRole("admin")
     public Result save(@RequestBody @Valid MeetingRoomEntity meetingRoom) {
-        meetingRoomService.save(meetingRoom);
+        meetingRoomService.saveRoom(meetingRoom);
         return Result.success();
     }
 
@@ -56,8 +58,9 @@ public class MeetingRoomController {
      * 修改
      */
     @PutMapping
+    @SaCheckRole("admin")
     public Result update(@RequestBody @Valid MeetingRoomEntity meetingRoom) {
-        meetingRoomService.updateById(meetingRoom);
+        meetingRoomService.updateRoom(meetingRoom);
         return Result.success();
     }
 
@@ -65,8 +68,9 @@ public class MeetingRoomController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody Long[] roomIds) {
-        meetingRoomService.removeByIds(Arrays.asList(roomIds));
+    @SaCheckRole("admin")
+    public Result delete(@RequestParam("id") List<Long> roomIds) {
+        meetingRoomService.deleteRoom(roomIds);
         return Result.success();
     }
 

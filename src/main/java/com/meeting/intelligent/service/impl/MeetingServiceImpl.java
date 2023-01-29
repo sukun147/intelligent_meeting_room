@@ -1,5 +1,7 @@
 package com.meeting.intelligent.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import com.baidu.aip.face.AipFace;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,18 +9,24 @@ import com.meeting.intelligent.Exception.GlobalException;
 import com.meeting.intelligent.dao.MeetingDao;
 import com.meeting.intelligent.entity.MeetingEntity;
 import com.meeting.intelligent.entity.MeetingRoomEntity;
+import com.meeting.intelligent.service.MeetingRoomService;
 import com.meeting.intelligent.service.MeetingService;
 import com.meeting.intelligent.service.UserService;
+import com.meeting.intelligent.thirdParty.FaceClient;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Query;
 import com.meeting.intelligent.utils.TimeUtil;
+import com.meeting.intelligent.vo.MeetingRespVo;
 import com.meeting.intelligent.vo.MeetingVo;
 import com.meeting.intelligent.vo.Participant;
+import com.meeting.intelligent.vo.SignInVo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import java.util.*;
 
@@ -33,35 +41,42 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
     private static final int TWO_DAY = 48 * 60 * 60 * 1000;
     private static final int ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
     @Autowired
-    private MeetingRoomServiceImpl meetingRoomService;
+    private MeetingRoomService meetingRoomService;
     @Autowired
     private UserService userService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<MeetingEntity> page = this.page(
+        IPage<MeetingRespVo> page = this.page(
             new Query<MeetingEntity>().getPage(params),
             new QueryWrapper<>()
-        );
+        ).convert(meetingEntity -> {
+            MeetingRespVo meetingRespVo = new MeetingRespVo();
+            BeanUtils.copyProperties(meetingEntity, meetingRespVo);
+            meetingRespVo.setRoomPosition(meetingRoomService.getById(meetingEntity.getRoomId()).getPosition());
+            return meetingRespVo;
+        });
         return new PageUtils(page);
     }
 
     @Override
     public void reserveMeeting(MeetingVo meetingVo) {
+        meetingVo.setMeetingId(null);
         Date startTime = meetingVo.getStartTime();
         Date endTime = meetingVo.getEndTime();
         if (startTime.after(endTime)) {
-            throw new GlobalException("会议时间非正确时间段", VALID_EXCEPTION.getCode());
+            throw new GlobalException("非法会议时间", PARAMETER_CHECK_EXCEPTION.getCode());
         }
         MeetingRoomEntity room = meetingRoomService.getById(meetingVo.getRoomId());
         if (room == null) {
-            throw new GlobalException("会议室不存在", VALID_EXCEPTION.getCode());
+            throw new GlobalException(MEETING_ROOM_NOT_EXIST_EXCEPTION.getMsg(), MEETING_ROOM_NOT_EXIST_EXCEPTION.getCode());
         }
         Date idleStartTime = room.getIdleStartTime();
         Date idleEndTime = room.getIdleEndTime();
         if (TimeUtil.compareTime(idleStartTime, startTime) > 0 || TimeUtil.compareTime(idleEndTime, endTime) < 0) {
             throw new GlobalException(ILLEGAL_TIMES_EXCEPTION.getMsg(), ILLEGAL_TIMES_EXCEPTION.getCode());
         }
+        meetingVo.setCreateUserId(StpUtil.getLoginIdAsLong());
         long createTime = new Date().getTime();
         Timer timer = new Timer();
         ReserveTimerTask reserveTimerTask = new ReserveTimerTask(meetingVo, createTime);
@@ -76,6 +91,93 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                 timer.schedule(reserveTimerTask, new Date(startTime.getTime() - ONE_DAY));
             }
         }
+    }
+
+    @Override
+    public MeetingRespVo info(Long meetingId) {
+        MeetingEntity meeting = checkMeetingExist(meetingId);
+        MeetingRespVo meetingRespVo = new MeetingRespVo();
+        BeanUtils.copyProperties(meeting, meetingRespVo);
+        meetingRespVo.setRoomPosition(meetingRoomService.getById(meeting.getRoomId()).getPosition());
+        return meetingRespVo;
+    }
+
+    @Override
+    public void deleteMeetings(List<Long> meetingIds) {
+        long loginId = StpUtil.getLoginIdAsLong();
+        if (loginId != 0L) {
+            this.listByIds(meetingIds).forEach(meeting -> {
+                if (!meeting.getCreateUserId().equals(loginId)) {
+                    throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
+                }
+            });
+        }
+        this.removeBatchByIds(meetingIds);
+    }
+
+    @Override
+    public List<MeetingRespVo> infoByRoomId(Long roomId) {
+        QueryWrapper<MeetingEntity> wrapper = new QueryWrapper<MeetingEntity>()
+            .eq("room_id", roomId)
+            .eq("meeting_status", 1);
+        List<MeetingEntity> meetingEntities = this.list(wrapper);
+        return meetingEntities.stream().map(meetingEntity -> {
+            MeetingRespVo meetingRespVo = new MeetingRespVo();
+            BeanUtils.copyProperties(meetingEntity, meetingRespVo);
+            meetingRespVo.setRoomPosition(meetingRoomService.getById(meetingEntity.getRoomId()).getPosition());
+            return meetingRespVo;
+        }).toList();
+    }
+
+    @Override
+    public void signIn(SignInVo signInVo) {
+        Long meetingId = signInVo.getMeetingId();
+        MeetingEntity meetingEntity = checkMeetingExist(meetingId);
+        if (meetingEntity.getMeetingStatus() == 0) {
+            throw new GlobalException(MEETING_END_EXCEPTION.getMsg(), MEETING_END_EXCEPTION.getCode());
+        }
+        AipFace client = FaceClient.getInstance();
+        JSONObject jsonObject = client.search(
+            signInVo.getFacePhoto(),
+            "BASE64",
+            "1",
+            null
+        );
+        int errorCode = jsonObject.getInt("error_code");
+        if (errorCode != 0) {
+            log.warn("人脸搜索失败，错误码：{}，错误信息：{}", errorCode, jsonObject.getString("error_msg"));
+            throw new GlobalException(FACE_SEARCH_EXCEPTION.getMsg(), FACE_SEARCH_EXCEPTION.getCode());
+        }
+        String userId = jsonObject.getJSONObject("result").getJSONArray("user_list").getJSONObject(0).getString("user_id");
+        meetingEntity.getParticipants().forEach(participant -> {
+            if (participant.getUserId().equals(Long.valueOf(userId))) {
+                participant.setSignStatus(1);
+            }
+        });
+        this.updateById(meetingEntity);
+    }
+
+    @Override
+    public void finish(Long meetingId, String token) {
+        MeetingEntity meetingEntity = checkMeetingExist(meetingId);
+        if (meetingEntity.getMeetingStatus() == 0) {
+            throw new GlobalException(MEETING_END_EXCEPTION.getMsg(), MEETING_END_EXCEPTION.getCode());
+        }
+        String validToken = DigestUtils.md5DigestAsHex((meetingId + meetingEntity.getEndTime().toString() + meetingEntity.getCreateUserId() + new Date()).getBytes());
+        if (validToken.equals(token)) {
+            throw new GlobalException("token错误", PARAMETER_CHECK_EXCEPTION.getCode());
+        }
+        meetingEntity.setMeetingStatus(0);
+        this.updateById(meetingEntity);
+    }
+
+    @Override
+    public MeetingEntity checkMeetingExist(Long meetingId) {
+        MeetingEntity meeting = this.getById(meetingId);
+        if (meeting == null) {
+            throw new GlobalException(MEETING_NOT_EXIST_EXCEPTION.getMsg(), MEETING_NOT_EXIST_EXCEPTION.getCode());
+        }
+        return meeting;
     }
 
     private void doReserveMeeting(MeetingVo meetingVo, long createTime) {
@@ -109,10 +211,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
     private void doSaveMeeting(MeetingEntity meetingEntity, Long roomId, Date startTime) {
         this.save(meetingEntity);
         List<Participant> participants = meetingEntity.getParticipants();
-        List<Long> userIds = new ArrayList<>();
-        for (Participant participant : participants) {
-            userIds.add(participant.getUserId());
-        }
+        List<Long> userIds = participants.stream().map(Participant::getUserId).toList();
         List<String> phones = userService.getPhones(userIds);
         String position = meetingRoomService.getById(roomId).getPosition();
         Timer timer = new Timer();

@@ -37,7 +37,7 @@ public class AdminEntity implements Serializable {
      * 密码
      */
     @NotBlank(message = "密码不能为空")
-    @Size(min=6, max=20, message = "密码长度必须在6-20个字符之间")
+    @Size(min=32, max=32, message = "密码未加密")
     private String password;
     /**
      * 手机号

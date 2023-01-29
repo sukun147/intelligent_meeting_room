@@ -8,28 +8,48 @@ package com.meeting.intelligent.Exception;
  * 错误码列表：
  *  10: 通用
  *  11: 会议室
+ *  12: 会议
+ *  13: 会议室类型
+ *  14: 人脸
  *  15: 数据
  */
 public enum ExceptionCodeEnum {
-
+    // 通用
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
-    VALID_EXCEPTION(10001, "参数校验未通过"),
+    PARAMETER_CHECK_EXCEPTION(10001, "参数校验未通过"),
     TO_MANY_REQUEST(10002, "请求流量过大，请稍后再试"),
     CAPTCHA_CODE_BUSY_EXCEPTION(10003, "验证码获取频率太高，请稍后再试"),
     PERMISSION_EXCEPTION(10004, "没有权限，请登录"),
     SECONDARY_CERTIFICATION_EXCEPTION(10005, "没有权限，请进行二级认证"),
+    ILLEGAL_ACCESS_EXCEPTION(10006, "非法访问他人资源"),
+    USERNAME_DISABLE_EXCEPTION(10007, "多次登录失败，该用户名已禁用一天"),
+    // 会议室
     MEETING_ROOM_OCCUPY_EXCEPTION(11001, "目标会议室该时间段已被占用，请重新选择"),
     ILLEGAL_TIMES_EXCEPTION(11002, "目标会议室该时间段不是允许时间，请重新选择"),
+    MEETING_ROOM_NOT_EXIST_EXCEPTION(11003, "目标会议室不存在"),
+    MEETING_ROOM_IN_USE_EXCEPTION(11004, "目标会议室正在使用中，不允许删除"),
+    // 会议
+    MEETING_NOT_EXIST_EXCEPTION(12001, "目标会议不存在"),
+    MEETING_END_EXCEPTION(12002, "会议已结束"),
+    // 会议室类型
+    ROOM_TYPE_NOT_EXIST_EXCEPTION(13001, "目标会议室类型不存在"),
+    ROOM_TYPE_IN_USE_EXCEPTION(13002, "目标会议室类型正在使用中，不允许删除"),
+    // 人脸
+    FACE_REGISTER_EXCEPTION(14001, "人脸注册失败，请更换人脸照片重试或联系管理员"),
+    FACE_DELETE_EXCEPTION(14002, "人脸删除失败，请联系管理员"),
+    FACE_UPDATE_EXCEPTION(14003, "人脸更新失败，请更换人脸照片重试或联系管理员"),
+    FACE_GET_EXCEPTION(14004, "人脸获取失败，请联系管理员"),
+    FACE_SEARCH_EXCEPTION(14005, "人脸搜索失败，请联系管理员"),
+    // 数据
     USER_EXIST_EXCEPTION(15001, "存在相同的用户名"),
     PHONE_EXIST_EXCEPTION(15002, "存在相同的手机号"),
     EMAIL_EXIST_EXCEPTION(15003, "存在相同的邮箱"),
     ACCOUNT_PASSWORD_WRONG_EXCEPTION(15004, "用户名密码错误"),
-    PHOTO_EXCEPTION(15005, "照片质量不佳，请更换照片"),
-    ILLEGAL_CHARACTERS_EXCEPTION(15006, "存在非法字符"),
-    CAPTCHA_CODE_WRONG_EXCEPTION(15007, "验证码错误");
+    ILLEGAL_CHARACTERS_EXCEPTION(15005, "存在非法字符"),
+    CAPTCHA_CODE_WRONG_EXCEPTION(15006, "验证码错误");
 
-    private int code;
-    private String msg;
+    private final int code;
+    private final String msg;
 
     ExceptionCodeEnum(int code, String msg) {
         this.code = code;

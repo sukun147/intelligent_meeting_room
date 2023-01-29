@@ -17,8 +17,13 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 .notMatch("/admin/login")
                 .notMatch("/user/register")
                 .notMatch("/captcha/**")
+                .notMatch("/meeting/room_meetings")
+                .notMatch("/meeting/sign_in")
+                .notMatch("/meeting/finish")
                 .check(r -> StpUtil.checkLogin());
-            SaRouter.match("/admin/**", "/admin/login", r -> StpUtil.checkRole("admin"));
+            SaRouter.match("/admin/**")
+                .notMatch("/admin/login")
+                .check(r -> StpUtil.checkRole("admin"));
         })).addPathPatterns("/**");
     }
 }

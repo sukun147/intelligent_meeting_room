@@ -1,9 +1,13 @@
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     username: ENC(sm3Avk0/y0wqBI7KXMIyx5wJX9Y+vR2LvREJScc7KtcJ4ZHBOnDLvw1mhbxcbIJR)
     password: ENC(VCNbMChTp2K9pBJRXF9RnzNpCTeJ/DjeX45PqsLPvgG2E9VkBvdM/1qPkhORbnbZ)
     url: jdbc:mysql://43.138.201.19/imrms?serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 120000
   data:
     redis:
       host: 43.138.201.19
@@ -38,7 +42,7 @@ sa-token:
 
 logging:
   level:
-    com.imrms.com.imrms.intelligent_meeting_room: DEBUG
+    com.imrms.com.imrms.intelligent_meeting_room: INFO
 
 BaiduAip:
   appId: ENC(2IoCyGnxO2OqNuAKCsW/JwCVmOqZNAtYx/qqKzWIV+EdfLqn7aReli2SpFxQqNX0)

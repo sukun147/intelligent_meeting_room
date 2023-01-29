@@ -10,7 +10,7 @@ import java.sql.Time;
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class MeetingRoomVo {
+public class MeetingRoomRespVo {
 
     /**
      * 编号

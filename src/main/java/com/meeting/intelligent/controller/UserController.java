@@ -6,16 +6,14 @@ import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.service.UserService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
-import com.meeting.intelligent.vo.RegisterVo;
+import com.meeting.intelligent.vo.LoginVo;
+import com.meeting.intelligent.vo.UserVo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-
-import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ACCOUNT_PASSWORD_WRONG_EXCEPTION;
-import static com.meeting.intelligent.Exception.ExceptionCodeEnum.PHOTO_EXCEPTION;
 
 
 /**
@@ -30,24 +28,18 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Result register(@RequestBody @Valid RegisterVo registerVo) {
-        if (userService.register(registerVo)) {
-            return Result.success();
-        }
-        return Result.error(PHOTO_EXCEPTION.getCode(), PHOTO_EXCEPTION.getMsg());
+    public Result register(@RequestBody @Valid UserVo userVo) {
+        userService.register(userVo);
+        return Result.success();
     }
 
     @PostMapping("/login")
-    public Result login(@RequestBody UserEntity userEntity) {
-        Long userId = userService.login(userEntity);
-        if (userId != null) {
-            StpUtil.login(userId);
-            return Result.success();
-        }
-        return Result.error(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg());
+    public Result login(@RequestBody LoginVo loginVo) {
+        userService.login(loginVo);
+        return Result.success();
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public Result logout() {
         StpUtil.logout();
         return Result.success();
@@ -56,7 +48,7 @@ public class UserController {
     /**
      * 列表
      */
-    @GetMapping
+    @GetMapping("/list")
     public Result list(@RequestParam Map<String, Object> params) {
         PageUtils page = userService.queryPage(params);
         return Result.success().put("data", page);
@@ -75,10 +67,10 @@ public class UserController {
     /**
      * 修改
      */
-    @SaCheckSafe
     @PutMapping
-    public Result update(@RequestBody @Valid UserEntity user) {
-        userService.updateById(user);
+    @SaCheckSafe
+    public Result update(@RequestBody @Valid UserVo userVo) {
+        userService.updateUser(userVo);
         return Result.success();
     }
 
@@ -86,12 +78,13 @@ public class UserController {
      * 删除
      */
     @DeleteMapping
-    public Result delete(@RequestBody @Valid Long[] userIds) {
-        userService.removeByIds(Arrays.asList(userIds));
+    @SaCheckSafe
+    public Result delete(@RequestParam("id") List<Long> userIds) {
+        userService.deleteUsers(userIds);
         return Result.success();
     }
 
-    @PostMapping("/openSafe")
+    @PostMapping("/open_safe")
     public Result openSafe(@RequestBody String password) {
         userService.checkPassword(password);
         StpUtil.openSafe(120);

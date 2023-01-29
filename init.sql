@@ -19,7 +19,7 @@ CREATE TABLE `admin`
 );
 
 INSERT INTO `admin`
-values (1, 'admin', '$2a$10$kS.kKUlgqWi56/Luazz0t.GEEGzPDWAFnu4jE2XLC6KJymkxSawoi', '19135055247', '838a@2udj.net');
+values (0, 'admin', '$2a$10$kS.kKUlgqWi56/Luazz0t.GEEGzPDWAFnu4jE2XLC6KJymkxSawoi', '19135055247', '838a@2udj.net');
 -- 此处手机号和邮箱均为随机生成
 
 CREATE TABLE `meeting`
@@ -28,7 +28,8 @@ CREATE TABLE `meeting`
     `title`               varchar(255) NOT NULL COMMENT '会议标题',
     `start_time`          datetime     NOT NULL COMMENT '会议开始时间',
     `end_time`            datetime     NOT NULL COMMENT '会议结束时间',
-    `participants`        json         NOT NULL COMMENT '参会人员及其签到情况', -- 格式：[{"signStatus": 0,"userId": 1}]
+    `create_user_id`      bigint       NOT NULL COMMENT '会议发起人',
+    `participants`        json         NOT NULL COMMENT '参会人员及其签到情况', -- 格式：[{"userId":1,"signStatus":0}]
     `report_address`      varchar(255) COMMENT '会议报告地址',
     `scheduled_period`    varchar(255) COMMENT '预定周期，cron格式（用于按日、周、月预定）',
     `meeting_status`      tinyint      NOT NULL default 1 COMMENT '启用状态（0为禁用，1为启用）',
@@ -36,6 +37,7 @@ CREATE TABLE `meeting`
     `meeting_description` longtext COMMENT '会议描述',
     PRIMARY KEY (`meeting_id`),
     INDEX                 `room_id` (`room_id`) USING BTREE INVISIBLE,
+    INDEX                 `create_user_id` (`create_user_id`) USING BTREE INVISIBLE,
     INDEX                 `meeting_title` (`title`) USING BTREE INVISIBLE
 );
 

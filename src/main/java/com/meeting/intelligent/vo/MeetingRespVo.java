@@ -1,33 +1,15 @@
-package com.meeting.intelligent.entity;
+package com.meeting.intelligent.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.meeting.intelligent.vo.Participant;
 import lombok.Data;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author sukun
- * @email 1477264431@qq.com
- * @date 2022-11-27 21:01:36
- */
 @Data
-@TableName(value = "meeting", autoResultMap = true)
-public class MeetingEntity implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class MeetingRespVo {
     /**
      * 会议id
      */
-    @TableId(type = IdType.AUTO)
     private Long meetingId;
     /**
      * 会议标题
@@ -48,7 +30,6 @@ public class MeetingEntity implements Serializable {
     /**
      * 参会人员及其签到情况
      */
-    @TableField(typeHandler = JacksonTypeHandler.class)
     private List<Participant> participants;
     /**
      * 会议报告地址
@@ -67,8 +48,11 @@ public class MeetingEntity implements Serializable {
      */
     private Long roomId;
     /**
+     * 会议室地址
+     */
+    private String roomPosition;
+    /**
      * 会议描述
      */
     private String meetingDescription;
-
 }

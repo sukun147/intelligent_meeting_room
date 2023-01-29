@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.CAPTCHA_CODE_BUSY_EXCEPTION;
-import static com.meeting.intelligent.Exception.ExceptionCodeEnum.VALID_EXCEPTION;
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.PARAMETER_CHECK_EXCEPTION;
 import static com.meeting.intelligent.utils.Constant.CAPTCHA_CODE_CACHE_PREFIX;
 
 @Component
@@ -52,10 +51,10 @@ public class CaptchaCode {
 
     public void sendInEmail(String email) throws MessagingException {
         if (!Pattern.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$", email)) {
-            throw new GlobalException("邮箱格式不正确", VALID_EXCEPTION.getCode());
+            throw new GlobalException("邮箱格式不正确", PARAMETER_CHECK_EXCEPTION.getCode());
         }
         String preEmail = CAPTCHA_CODE_CACHE_PREFIX + email;
-        antiJitter(preEmail);
+        antiRush(preEmail);
         String code = generateCaptchaCodeText(6);
         Context context = new Context();
         context.setVariable("captchaCode", Arrays.asList(code.split("")));
@@ -72,10 +71,10 @@ public class CaptchaCode {
 
     public void sendInSMS(String phone) {
         if (!Pattern.matches("^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", phone)) {
-            throw new GlobalException("手机号格式不正确", VALID_EXCEPTION.getCode());
+            throw new GlobalException("手机号格式不正确", PARAMETER_CHECK_EXCEPTION.getCode());
         }
         String prePhone = CAPTCHA_CODE_CACHE_PREFIX + phone;
-        antiJitter(prePhone);
+        antiRush(prePhone);
         String code = generateCaptchaCodeText(6);
         // 未备案，无SMS服务，验证码打印在控制台中自行读取供测试用
         System.out.println(phone + "验证码：" + code);
@@ -87,9 +86,8 @@ public class CaptchaCode {
         );
     }
 
-    private void antiJitter(String preRequester) {
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String preCode = ops.get(preRequester);
+    private void antiRush(String preRequester) {
+        String preCode = redisTemplate.opsForValue().get(preRequester);
         if (StringUtils.isNotBlank(preCode)) {
             long pre = Long.parseLong(preCode.split("_")[1]);
             if (System.currentTimeMillis() - pre < 60000) {

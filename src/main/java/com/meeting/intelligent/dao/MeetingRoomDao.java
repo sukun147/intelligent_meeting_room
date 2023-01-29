@@ -3,6 +3,7 @@ package com.meeting.intelligent.dao;
 import com.meeting.intelligent.entity.MeetingRoomEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author sukun

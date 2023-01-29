@@ -25,4 +25,8 @@ public class Constant {
      * 验证码缓存前缀
      */
     public static final String CAPTCHA_CODE_CACHE_PREFIX="captcha_code_";
+    /**
+     * 登录限制用户名缓存前缀
+     */
+    public static final String LOGIN_LIMIT_USERNAME_CACHE_PREFIX="login_limit_username_";
 }

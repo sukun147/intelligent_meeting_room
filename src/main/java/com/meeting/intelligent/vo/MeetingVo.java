@@ -1,5 +1,6 @@
 package com.meeting.intelligent.vo;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -37,9 +38,14 @@ public class MeetingVo {
     @NotNull(message = "会议结束时间不能为空")
     private Date endTime;
     /**
+     * 会议发起人
+     */
+    private Long createUserId;
+    /**
      * 参会人员及其签到情况
      */
     @NotEmpty(message = "参会人员不能为空")
+    @Valid
     private List<Participant> participants;
     /**
      * 会议报告地址

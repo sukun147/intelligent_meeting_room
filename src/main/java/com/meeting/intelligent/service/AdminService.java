@@ -14,5 +14,7 @@ public interface AdminService extends IService<AdminEntity> {
     void login(LoginVo loginVo);
 
     void checkPassword(String password);
+
+    void updateAdmin(AdminEntity admin);
 }
 
