@@ -5,6 +5,11 @@ import com.baidu.aip.face.AipFace;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cronutils.model.Cron;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import com.meeting.intelligent.Exception.GlobalException;
 import com.meeting.intelligent.dao.MeetingDao;
 import com.meeting.intelligent.entity.MeetingEntity;
@@ -20,11 +25,15 @@ import com.meeting.intelligent.vo.MeetingRespVo;
 import com.meeting.intelligent.vo.MeetingVo;
 import com.meeting.intelligent.vo.Participant;
 import com.meeting.intelligent.vo.SignInVo;
-import lombok.Data;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -79,7 +88,12 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
         meetingVo.setCreateUserId(StpUtil.getLoginIdAsLong());
         long createTime = new Date().getTime();
         Timer timer = new Timer();
-        ReserveTimerTask reserveTimerTask = new ReserveTimerTask(meetingVo, createTime);
+        TimerTask reserveTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                doReserveMeeting(meetingVo, createTime);
+            }
+        };
         if (startTime.getTime() - createTime < TWO_DAY) {
             doReserveMeeting(meetingVo, createTime);
         } else if (startTime.getTime() - createTime < ONE_WEEK) {
@@ -210,13 +224,28 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
 
     private void doSaveMeeting(MeetingEntity meetingEntity, Long roomId, Date startTime) {
         this.save(meetingEntity);
+        String period = meetingEntity.getScheduledPeriod();
+        if (StringUtils.isNotBlank(period)) {
+            CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+            CronParser parser = new CronParser(cronDefinition);
+            Cron cron = parser.parse(period);
+            cron.validate();
+            // TODO 周期预定
+        }
         List<Participant> participants = meetingEntity.getParticipants();
         List<Long> userIds = participants.stream().map(Participant::getUserId).toList();
         List<String> phones = userService.getPhones(userIds);
         String position = meetingRoomService.getById(roomId).getPosition();
-        Timer timer = new Timer();
-        RemindTimerTask remindTimerTask = new RemindTimerTask(phones, meetingEntity.getTitle(), position);
-        timer.schedule(remindTimerTask, new Date(startTime.getTime() - THIRTY_MINUTES));
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                phones.forEach(phone -> {
+                    // TODO 发送短信通知
+                    // 目前无备案，无法使用SMS服务，故打印在控制台代替
+                    log.info("发送短信通知给{}通知：{}将于30分钟后在{}开始", phone, meetingEntity.getTitle(), position);
+                });
+            }
+        }, new Date(startTime.getTime() - THIRTY_MINUTES));
     }
 
     private void adjustMeeting(List<MeetingEntity> conflictMeetings, MeetingEntity currentMeeting) {
@@ -284,46 +313,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
         }
     }
 
-    private class ReserveTimerTask extends TimerTask {
-        private final MeetingVo meetingVo;
-        private final long createTime;
-
-        public ReserveTimerTask(MeetingVo meetingVo, long createTime) {
-            this.meetingVo = meetingVo;
-            this.createTime = createTime;
-        }
-
-        @Override
-        public void run() {
-            doReserveMeeting(meetingVo, createTime);
-        }
-    }
-
-    private class RemindTimerTask extends TimerTask {
-
-        private final List<String> phones;
-        private final String meetingName;
-        private final String roomName;
-
-        public RemindTimerTask(List<String> phones, String meetingName, String roomName) {
-            this.phones = phones;
-            this.meetingName = meetingName;
-            this.roomName = roomName;
-        }
-
-        @Override
-        public void run() {
-            phones.forEach(phone -> {
-                // 发送短信通知，目前无备案，无法使用SMS服务，故打印在控制台代替
-                log.info("发送短信通知给{}通知：{}将于30分钟后在{}开始", phone, meetingName, roomName);
-            });
-        }
-    }
-
-    @Data
-    private class Times {
-        private final Date startTime;
-        private final Date endTime;
+    @Value
+    private static class Times {
+        Date startTime;
+        Date endTime;
     }
 
 }

@@ -5,9 +5,6 @@ import java.util.Date;
 public class TimeUtil {
     /**
      * 比较d1和d2的时间部分
-     * @param d1
-     * @param d2
-     * @return
      */
     public static int compareTime(Date d1, Date d2)
     {
