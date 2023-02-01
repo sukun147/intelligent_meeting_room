@@ -1,8 +1,13 @@
 package com.meeting.intelligent.service;
 
+import com.alicp.jetcache.anno.CacheInvalidate;
+import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.meeting.intelligent.entity.AdminEntity;
+import com.meeting.intelligent.vo.AdminRespVo;
 import com.meeting.intelligent.vo.LoginVo;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author sukun
@@ -15,6 +20,10 @@ public interface AdminService extends IService<AdminEntity> {
 
     void checkPassword(String password);
 
+    @Cached(name = "admin_cache_", expire = 1, timeUnit = TimeUnit.DAYS)
+    AdminRespVo getAdmin();
+
+    @CacheInvalidate(name = "admin_cache_")
     void updateAdmin(AdminEntity admin);
 }
 

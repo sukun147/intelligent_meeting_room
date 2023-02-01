@@ -1,11 +1,11 @@
 DROP
-DATABASE IF EXISTS `imrms`;
+    DATABASE IF EXISTS `imrms`;
 
 CREATE
-DATABASE `imrms`;
+    DATABASE `imrms`;
 
 USE
-`imrms`;
+    `imrms`;
 
 CREATE TABLE `admin`
 (
@@ -15,7 +15,7 @@ CREATE TABLE `admin`
     `phone_number` char(11)     NOT NULL COMMENT '手机号',
     `email`        varchar(255) NOT NULL COMMENT '邮箱',
     PRIMARY KEY (`admin_id`),
-    INDEX          `admin` (`username`, `password`) USING BTREE INVISIBLE
+    INDEX `admin` (`username`, `password`) USING BTREE INVISIBLE
 );
 
 INSERT INTO `admin`
@@ -36,9 +36,9 @@ CREATE TABLE `meeting`
     `room_id`             bigint       NOT NULL COMMENT '会议室id',
     `meeting_description` longtext COMMENT '会议描述',
     PRIMARY KEY (`meeting_id`),
-    INDEX                 `room_id` (`room_id`) USING BTREE INVISIBLE,
-    INDEX                 `create_user_id` (`create_user_id`) USING BTREE INVISIBLE,
-    INDEX                 `meeting_title` (`title`) USING BTREE INVISIBLE
+    INDEX `room_id` (`room_id`) USING BTREE INVISIBLE,
+    INDEX `create_user_id` (`create_user_id`) USING BTREE INVISIBLE,
+    INDEX `meeting_title` (`title`) USING BTREE INVISIBLE
 );
 
 CREATE TABLE `meeting_room`
@@ -52,8 +52,8 @@ CREATE TABLE `meeting_room`
     `room_status`      tinyint      NOT NULL default 1 COMMENT '启用状态（0为禁用，1为启用）',
     `room_sort`        integer      NOT NULL COMMENT '会议室排序',
     PRIMARY KEY (`room_id`),
-    INDEX              `type_id` (`type_id`) USING BTREE INVISIBLE,
-    INDEX              `room_sort` (`room_sort`) USING BTREE INVISIBLE
+    INDEX `type_id` (`type_id`) USING BTREE INVISIBLE,
+    INDEX `room_sort` (`room_sort`) USING BTREE INVISIBLE
 );
 
 CREATE TABLE `meeting_room_type`
@@ -65,7 +65,7 @@ CREATE TABLE `meeting_room_type`
     `type_status`      tinyint      NOT NULL default 1 COMMENT '启用状态（0为禁用，1为启用）',
     `type_sort`        integer      NOT NULL COMMENT '会议室类型排序',
     PRIMARY KEY (`type_id`),
-    INDEX              `type_sort` (`type_sort`) USING BTREE INVISIBLE
+    INDEX `type_sort` (`type_sort`) USING BTREE INVISIBLE
 );
 
 CREATE TABLE `user`
@@ -78,5 +78,5 @@ CREATE TABLE `user`
     `permission_level` integer      NOT NULL COMMENT '权限等级（1为普通员工）',
     `status`           tinyint      NOT NULL default 1 COMMENT '启用状态（0为禁用，1为启用）',
     PRIMARY KEY (`user_id`),
-    INDEX              `user` (`username`, `password`) USING BTREE INVISIBLE
+    INDEX `user` (`username`, `password`) USING BTREE INVISIBLE
 );

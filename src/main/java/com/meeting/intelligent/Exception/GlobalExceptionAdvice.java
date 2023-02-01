@@ -3,6 +3,7 @@ package com.meeting.intelligent.Exception;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotSafeException;
 import com.meeting.intelligent.utils.Result;
+import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,7 +39,7 @@ public class GlobalExceptionAdvice {
             return Result.error(((GlobalException) exception).getCode(), ((GlobalException) exception).getMsg());
         } else {
             log.warn("未知异常 ex={}", exception.getMessage());
-            exception.printStackTrace();
+//            exception.printStackTrace();
             return Result.error();
         }
     }

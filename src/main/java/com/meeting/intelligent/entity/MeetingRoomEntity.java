@@ -54,7 +54,7 @@ public class MeetingRoomEntity implements Serializable {
      * 会议室类型
      */
     @NotNull(message = "会议室类型不能为空")
-    private Integer typeId;
+    private Long typeId;
     /**
      * 启用状态（0为禁用，1为启用）
      */

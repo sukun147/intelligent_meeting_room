@@ -16,7 +16,7 @@ public interface MeetingRoomTypeService extends IService<MeetingRoomTypeEntity> 
 
     PageUtils queryPage(Map<String, Object> params);
 
-    void checkTypeExist(Integer typeId);
+    void checkTypeExist(Long typeId);
 
     void deleteTypes(List<Long> typeIds);
 }

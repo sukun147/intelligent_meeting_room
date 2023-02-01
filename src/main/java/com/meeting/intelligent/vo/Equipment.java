@@ -15,5 +15,5 @@ public class Equipment {
      * 设备数量
      */
     @NotNull(message = "设备数量不能为空")
-    private String equipmentNumber;
+    private Integer equipmentNumber;
 }

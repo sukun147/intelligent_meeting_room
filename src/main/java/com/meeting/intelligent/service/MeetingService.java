@@ -19,18 +19,18 @@ public interface MeetingService extends IService<MeetingEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    void reserveMeeting(MeetingVo MeetingVo);
+    void add(MeetingVo MeetingVo);
 
-    MeetingRespVo info(Long meetingId);
+    MeetingRespVo get(Long meetingId);
 
-    void deleteMeetings(List<Long> meetingIds);
+    void updateForce(MeetingVo meetingVo);
 
-    List<MeetingRespVo> infoByRoomId(Long roomId);
+    void delete(List<Long> meetingIds);
+
+    List<MeetingRespVo> getByRoomId(Long roomId);
 
     void signIn(SignInVo signInVo);
 
-    void finish(Long meetingId, String token);
-
-    MeetingEntity checkMeetingExist(Long meetingId);
+    void finish(Long meetingId, String sign, Long timeStamp);
 }
 

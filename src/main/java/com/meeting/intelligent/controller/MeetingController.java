@@ -1,5 +1,6 @@
 package com.meeting.intelligent.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.meeting.intelligent.service.MeetingService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
@@ -40,7 +41,7 @@ public class MeetingController {
      */
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long meetingId) {
-        MeetingRespVo meetingRespVo = meetingService.info(meetingId);
+        MeetingRespVo meetingRespVo = meetingService.get(meetingId);
         return Result.success().setData(meetingRespVo);
     }
 
@@ -49,7 +50,7 @@ public class MeetingController {
      */
     @GetMapping("/room_meetings")
     public Result infoByRoomId(@RequestParam("roomId") Long roomId) {
-        List<MeetingRespVo> vos = meetingService.infoByRoomId(roomId);
+        List<MeetingRespVo> vos = meetingService.getByRoomId(roomId);
         return Result.success().setData(vos);
     }
 
@@ -58,7 +59,7 @@ public class MeetingController {
      */
     @PostMapping
     public Result save(@RequestBody @Valid MeetingVo meetingVo) {
-        meetingService.reserveMeeting(meetingVo);
+        meetingService.add(meetingVo);
         return Result.success();
     }
 
@@ -67,8 +68,18 @@ public class MeetingController {
      */
     @PutMapping
     public Result update(@RequestBody @Valid MeetingVo meetingVo) {
-        meetingService.deleteMeetings(List.of(meetingVo.getMeetingId()));
-        meetingService.reserveMeeting(meetingVo);
+        meetingService.delete(List.of(meetingVo.getMeetingId()));
+        meetingService.add(meetingVo);
+        return Result.success();
+    }
+
+    /**
+     * 强制修改
+     */
+    @PostMapping("/update_force")
+    @SaCheckRole("admin")
+    public Result updateForce(@RequestBody @Valid MeetingVo meetingVo) {
+        meetingService.updateForce(meetingVo);
         return Result.success();
     }
 
@@ -85,8 +96,8 @@ public class MeetingController {
      * 会议结束
      */
     @GetMapping("/finish")
-    public Result finish(@RequestParam("meetingId") Long meetingId, @RequestParam("token") String token) {
-        meetingService.finish(meetingId, token);
+    public Result finish(@RequestParam("id") Long meetingId, @RequestParam("sign") String sign, @RequestParam("time") Long timeStamp) {
+        meetingService.finish(meetingId, sign, timeStamp);
         return Result.success();
     }
 
@@ -95,7 +106,7 @@ public class MeetingController {
      */
     @DeleteMapping
     public Result delete(@RequestParam("id") List<Long> meetingIds) {
-        meetingService.deleteMeetings(meetingIds);
+        meetingService.delete(meetingIds);
         return Result.success();
     }
 

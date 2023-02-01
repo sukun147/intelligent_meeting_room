@@ -8,7 +8,6 @@ import com.meeting.intelligent.utils.Result;
 import com.meeting.intelligent.vo.AdminRespVo;
 import com.meeting.intelligent.vo.LoginVo;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,14 +42,12 @@ public class AdminController {
      */
     @GetMapping
     public Result info() {
-        AdminEntity adminEntity = adminService.getById(0L);
-        AdminRespVo adminRespVo = new AdminRespVo();
-        BeanUtils.copyProperties(adminEntity, adminRespVo);
+        AdminRespVo adminRespVo = adminService.getAdmin();
         return Result.success().setData(adminRespVo);
     }
 
     /**
-     * 修改管理员信息，需要二次认证
+     * 修改密码，需要二次认证
      */
     @PutMapping
     @SaCheckSafe

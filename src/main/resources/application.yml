@@ -6,8 +6,7 @@ spring:
     password: ENC(VCNbMChTp2K9pBJRXF9RnzNpCTeJ/DjeX45PqsLPvgG2E9VkBvdM/1qPkhORbnbZ)
     url: jdbc:mysql://43.138.201.19/imrms?serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      max-lifetime: 120000
+    type: com.alibaba.druid.pool.DruidDataSource
   data:
     redis:
       host: 43.138.201.19
@@ -21,6 +20,15 @@ spring:
     username: sk1477264431@163.com
     password: ENC(qPmtrZXuOPiADhFO4BreC6yGLeCa1O4Y4TuHOEbrLSsYb2/+KKnPoRbdUhQh165ERxntl0px9EQ8aUTL+np+1Q==)
     default-encoding: utf-8
+  quartz:
+    job-store-type: memory
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.simpl.RAMJobStore
 
 mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
@@ -39,6 +47,28 @@ sa-token:
   is-share: false
   token-style: uuid
   is-log: false
+
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson2
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson2
+      broadcastChannel: projectA
+      valueEncoder: kryo5
+      valueDecoder: kryo5
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: ${spring.data.redis.host}
+      port: ${spring.data.redis.port}
+      password: ${spring.data.redis.password}
 
 logging:
   level:

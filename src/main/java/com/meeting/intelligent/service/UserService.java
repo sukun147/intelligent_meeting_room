@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.vo.LoginVo;
+import com.meeting.intelligent.vo.UserRespVo;
 import com.meeting.intelligent.vo.UserVo;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public interface UserService extends IService<UserEntity> {
 
     void login(LoginVo loginVo);
 
+    UserRespVo get(Long userId);
+
     void deleteUsers(List<Long> userIds);
 
     void updateUser(UserVo userVo);
@@ -31,8 +34,6 @@ public interface UserService extends IService<UserEntity> {
     void checkUsernameUnique(String name);
 
     void checkPassword(String password);
-
-    List<String> getPhones(List<Long> userIds);
 
     void checkIds(List<Long> userIds);
 }

@@ -2,6 +2,8 @@ package com.meeting.intelligent.vo;
 
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.sql.Time;
 
 /**
@@ -10,7 +12,9 @@ import java.sql.Time;
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class MeetingRoomRespVo {
+public class MeetingRoomRespVo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * 编号
@@ -35,7 +39,7 @@ public class MeetingRoomRespVo {
     /**
      * 会议室类型
      */
-    private Integer typeId;
+    private Long typeId;
     /**
      * 类型名称
      */

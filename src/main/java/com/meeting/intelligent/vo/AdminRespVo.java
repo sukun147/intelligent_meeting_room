@@ -2,13 +2,18 @@ package com.meeting.intelligent.vo;
 
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * @author sukun
  * @email 1477264431@qq.com
  * @date 2022-11-27 21:01:36
  */
 @Data
-public class AdminRespVo {
+public class AdminRespVo implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * 用户名
      */

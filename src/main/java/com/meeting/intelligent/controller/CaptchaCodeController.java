@@ -8,18 +8,19 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/captcha")
-public class CaptchaCodeSendController {
+public class CaptchaCodeController {
     @Autowired
     private CaptchaCode captchaCode;
 
-    /**
-     * 发送验证码到邮箱
-     */
-    @GetMapping(value = "/send_code_email")
-    public Result sendCodeEmail(@RequestParam("email") String email) throws MessagingException {
-        captchaCode.sendInEmail(email);
-        return Result.success();
-    }
+//     暂时不需要该功能
+//    /**
+//     * 发送验证码到邮箱
+//     */
+//    @GetMapping(value = "/send_code_email")
+//    public Result sendCodeEmail(@RequestParam("email") String email) throws MessagingException {
+//        captchaCode.sendInEmail(email);
+//        return Result.success();
+//    }
 
     /**
      * 发送验证码到手机

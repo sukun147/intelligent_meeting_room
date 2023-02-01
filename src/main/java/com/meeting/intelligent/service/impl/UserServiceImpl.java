@@ -1,6 +1,10 @@
 package com.meeting.intelligent.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.alicp.jetcache.Cache;
+import com.alicp.jetcache.CacheManager;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.template.QuickConfig;
 import com.baidu.aip.face.AipFace;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,7 +17,9 @@ import com.meeting.intelligent.thirdParty.FaceClient;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Query;
 import com.meeting.intelligent.vo.LoginVo;
+import com.meeting.intelligent.vo.UserRespVo;
 import com.meeting.intelligent.vo.UserVo;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -24,8 +30,10 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.*;
@@ -38,12 +46,27 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+    private Cache<String, UserRespVo> userCache;
+
+    @PostConstruct
+    public void init() {
+        QuickConfig qc = QuickConfig.newBuilder("user_cache_").expire(Duration.ofHours(1)).cacheType(CacheType.REMOTE).build();
+        userCache = cacheManager.getOrCreateCache(qc);
+    }
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<UserEntity> page = this.page(
+        IPage<UserRespVo> page = this.page(
             new Query<UserEntity>().getPage(params),
             new QueryWrapper<>()
-        );
+        ).convert(userEntity -> {
+            UserRespVo userRespVo = new UserRespVo();
+            BeanUtils.copyProperties(userEntity, userRespVo);
+            return userRespVo;
+        });
         return new PageUtils(page);
     }
 
@@ -87,7 +110,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         String count = ops.get(limit);
         if (StringUtils.isNotBlank(count) && Integer.parseInt(count) > 5) {
             redisTemplate.expire(limit, 1, TimeUnit.DAYS);
-            log.info("用户{}登录失败次数超过5次，禁用一天", username);
+            log.info("用户{}1小时内登录失败次数超过5次，禁用一天", username);
             throw new GlobalException(USERNAME_DISABLE_EXCEPTION.getMsg(), USERNAME_DISABLE_EXCEPTION.getCode());
         }
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<UserEntity>().eq("username", username);
@@ -95,9 +118,30 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (user == null || !encoder.matches(loginVo.getPassword(), user.getPassword())) {
             ops.increment(limit, 1);
+            redisTemplate.expire(limit, 1, TimeUnit.HOURS);
             throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
         }
         StpUtil.login(user.getUserId());
+    }
+
+    @Override
+    public UserRespVo get(Long userId) {
+        long loginId = StpUtil.getLoginIdAsLong();
+        if (loginId != 0L && loginId != userId) {
+            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
+        }
+        UserRespVo cache = userCache.get(userId.toString());
+        if (cache != null) {
+            return cache;
+        }
+        UserEntity userEntity = this.getById(userId);
+        if (userEntity==null){
+            throw new GlobalException(USER_NOT_EXIST_EXCEPTION.getMsg(), USER_NOT_EXIST_EXCEPTION.getCode());
+        }
+        UserRespVo userRespVo = new UserRespVo();
+        BeanUtils.copyProperties(userEntity, userRespVo);
+        userCache.put(userId.toString(), userRespVo, 55 + new Random().nextInt(10), TimeUnit.MINUTES);
+        return userRespVo;
     }
 
     @Override
@@ -125,10 +169,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Override
     public void updateUser(UserVo userVo) {
         long loginId = StpUtil.getLoginIdAsLong();
-        if (loginId != 0L) {
-            if (!userVo.getUserId().equals(loginId)) {
-                throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
-            }
+        if (loginId != 0L && !userVo.getUserId().equals(loginId)) {
+            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
         }
         AipFace client = FaceClient.getInstance();
         JSONObject jsonObject = client.updateUser(
@@ -174,12 +216,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (userEntity == null || !encoder.matches(password, userEntity.getPassword())) {
             throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
         }
-    }
-
-    @Override
-    public List<String> getPhones(List<Long> userIds) {
-        checkIds(userIds);
-        return this.list(new QueryWrapper<UserEntity>().in("user_id", userIds)).stream().map(UserEntity::getPhone).toList();
     }
 
     @Override

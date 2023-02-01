@@ -10,7 +10,7 @@ package com.meeting.intelligent.Exception;
  *  11: 会议室
  *  12: 会议
  *  13: 会议室类型
- *  14: 人脸
+ *  14: 用户
  *  15: 数据
  */
 public enum ExceptionCodeEnum {
@@ -22,12 +22,14 @@ public enum ExceptionCodeEnum {
     PERMISSION_EXCEPTION(10004, "没有权限，请登录"),
     SECONDARY_CERTIFICATION_EXCEPTION(10005, "没有权限，请进行二级认证"),
     ILLEGAL_ACCESS_EXCEPTION(10006, "非法访问他人资源"),
-    USERNAME_DISABLE_EXCEPTION(10007, "多次登录失败，该用户名已禁用一天"),
+    USERNAME_DISABLE_EXCEPTION(10007, "短时间内多次登录失败，该用户名已禁用一天"),
+    SCHEDULER_EXCEPTION(10008, "定时任务异常"),
     // 会议室
     MEETING_ROOM_OCCUPY_EXCEPTION(11001, "目标会议室该时间段已被占用，请重新选择"),
     ILLEGAL_TIMES_EXCEPTION(11002, "目标会议室该时间段不是允许时间，请重新选择"),
     MEETING_ROOM_NOT_EXIST_EXCEPTION(11003, "目标会议室不存在"),
     MEETING_ROOM_IN_USE_EXCEPTION(11004, "目标会议室正在使用中，不允许删除"),
+    CONFLICT_WITH_PERIODIC_MEETING_EXCEPTION(11005, "目标会议室该时间段与周期会议冲突，请重新选择"),
     // 会议
     MEETING_NOT_EXIST_EXCEPTION(12001, "目标会议不存在"),
     MEETING_END_EXCEPTION(12002, "会议已结束"),
@@ -40,6 +42,7 @@ public enum ExceptionCodeEnum {
     FACE_UPDATE_EXCEPTION(14003, "人脸更新失败，请更换人脸照片重试或联系管理员"),
     FACE_GET_EXCEPTION(14004, "人脸获取失败，请联系管理员"),
     FACE_SEARCH_EXCEPTION(14005, "人脸搜索失败，请联系管理员"),
+    USER_NOT_EXIST_EXCEPTION(14006, "用户不存在"),
     // 数据
     USER_EXIST_EXCEPTION(15001, "存在相同的用户名"),
     PHONE_EXIST_EXCEPTION(15002, "存在相同的手机号"),

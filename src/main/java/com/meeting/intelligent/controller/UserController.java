@@ -7,6 +7,7 @@ import com.meeting.intelligent.service.UserService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
 import com.meeting.intelligent.vo.LoginVo;
+import com.meeting.intelligent.vo.UserRespVo;
 import com.meeting.intelligent.vo.UserVo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +55,12 @@ public class UserController {
         return Result.success().put("data", page);
     }
 
-
     /**
      * 信息
      */
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long userId) {
-        UserEntity user = userService.getById(userId);
+        UserRespVo user = userService.get(userId);
         return Result.success().put("data", user);
     }
 

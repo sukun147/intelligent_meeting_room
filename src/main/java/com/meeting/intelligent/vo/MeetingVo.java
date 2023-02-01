@@ -65,10 +65,6 @@ public class MeetingVo {
     @NotNull(message = "会议室id不能为空")
     private Long roomId;
     /**
-     * 会议室地址
-     */
-    private String position;
-    /**
      * 会议描述
      */
     private String meetingDescription;

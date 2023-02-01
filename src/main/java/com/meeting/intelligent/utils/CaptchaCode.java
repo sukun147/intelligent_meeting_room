@@ -66,7 +66,7 @@ public class CaptchaCode {
         helper.setSubject("智能会议室管理系统验证码");
         helper.setText(emailContent, true);
         mailSender.send(message);
-        redisTemplate.opsForValue().set(preEmail, code, 60 * 5);
+        redisTemplate.opsForValue().set(preEmail, code, 10L, TimeUnit.MINUTES);
     }
 
     public void sendInSMS(String phone) {
@@ -78,12 +78,7 @@ public class CaptchaCode {
         String code = generateCaptchaCodeText(6);
         // 未备案，无SMS服务，验证码打印在控制台中自行读取供测试用
         System.out.println(phone + "验证码：" + code);
-        redisTemplate.opsForValue().set(
-            prePhone,
-            code + "_" + System.currentTimeMillis(),
-            10L,
-            TimeUnit.MINUTES
-        );
+        redisTemplate.opsForValue().set(prePhone, code + "_" + System.currentTimeMillis(), 10L, TimeUnit.MINUTES);
     }
 
     private void antiRush(String preRequester) {

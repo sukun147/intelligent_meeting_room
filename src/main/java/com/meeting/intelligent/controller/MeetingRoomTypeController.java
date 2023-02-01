@@ -1,16 +1,27 @@
 package com.meeting.intelligent.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.alicp.jetcache.Cache;
+import com.alicp.jetcache.CacheManager;
+import com.alicp.jetcache.anno.CacheType;
+import com.alicp.jetcache.template.QuickConfig;
 import com.meeting.intelligent.entity.MeetingRoomTypeEntity;
 import com.meeting.intelligent.service.MeetingRoomTypeService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
+import com.meeting.intelligent.vo.MeetingRoomTypeVo;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ROOM_TYPE_NOT_EXIST_EXCEPTION;
 
 
 /**
@@ -23,6 +34,16 @@ import java.util.Map;
 public class MeetingRoomTypeController {
     @Autowired
     private MeetingRoomTypeService meetingRoomTypeService;
+
+    @Autowired
+    private CacheManager cacheManager;
+    private Cache<String, MeetingRoomTypeEntity> typeCache;
+
+    @PostConstruct
+    public void init() {
+        QuickConfig qc = QuickConfig.newBuilder("type_cache_").expire(Duration.ofDays(1)).cacheType(CacheType.REMOTE).build();
+        typeCache = cacheManager.getOrCreateCache(qc);
+    }
 
     /**
      * 列表
@@ -39,7 +60,15 @@ public class MeetingRoomTypeController {
      */
     @GetMapping("/{id}")
     public Result info(@PathVariable("id") Long typeId) {
+        MeetingRoomTypeEntity cache = typeCache.get(typeId.toString());
+        if (cache != null) {
+            return Result.success().setData(cache);
+        }
         MeetingRoomTypeEntity meetingRoomType = meetingRoomTypeService.getById(typeId);
+        if (meetingRoomType == null) {
+            return Result.error(ROOM_TYPE_NOT_EXIST_EXCEPTION.getCode(), ROOM_TYPE_NOT_EXIST_EXCEPTION.getMsg());
+        }
+        typeCache.put(typeId.toString(), meetingRoomType, 55 + new Random().nextInt(10), TimeUnit.MINUTES);
         return Result.success().setData(meetingRoomType);
     }
 
@@ -60,6 +89,7 @@ public class MeetingRoomTypeController {
     @SaCheckRole("admin")
     public Result update(@RequestBody @Valid MeetingRoomTypeEntity meetingRoomType) {
         meetingRoomTypeService.updateById(meetingRoomType);
+        typeCache.remove(meetingRoomType.getTypeId().toString());
         return Result.success();
     }
 
