@@ -2,7 +2,6 @@ package com.meeting.intelligent.controller;
 
 import cn.dev33.satoken.annotation.SaCheckSafe;
 import cn.dev33.satoken.stp.StpUtil;
-import com.meeting.intelligent.entity.UserEntity;
 import com.meeting.intelligent.service.UserService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;

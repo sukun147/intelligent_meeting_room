@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ACCOUNT_PASSWORD_WRONG_EXCEPTION;
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.USERNAME_DISABLE_EXCEPTION;
-import static com.meeting.intelligent.utils.Constant.CAPTCHA_CODE_CACHE_PREFIX;
 import static com.meeting.intelligent.utils.Constant.LOGIN_LIMIT_USERNAME_CACHE_PREFIX;
 
 @Slf4j
@@ -40,14 +39,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> impleme
             redisTemplate.expire(limit, 1, TimeUnit.DAYS);
             log.warn("用户{}1小时内登录失败次数超过5次，禁用一天", username);
             // TODO 发送邮件通知管理员
-            throw new GlobalException(USERNAME_DISABLE_EXCEPTION.getMsg(), USERNAME_DISABLE_EXCEPTION.getCode());
+            throw new GlobalException(USERNAME_DISABLE_EXCEPTION);
         }
         AdminEntity admin = this.getOne(new QueryWrapper<AdminEntity>().eq("username", username));
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (admin == null || !encoder.matches(loginVo.getPassword(), admin.getPassword())) {
             ops.increment(limit, 1);
             redisTemplate.expire(limit, 1, TimeUnit.HOURS);
-            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
+            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION);
         }
     }
 
@@ -56,7 +55,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> impleme
         AdminEntity admin = this.getById(0L);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!encoder.matches(password, admin.getPassword())) {
-            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
+            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION);
         }
     }
 

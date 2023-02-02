@@ -2,7 +2,6 @@ package com.meeting.intelligent.controller;
 
 import com.meeting.intelligent.utils.Result;
 import com.meeting.intelligent.utils.CaptchaCode;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

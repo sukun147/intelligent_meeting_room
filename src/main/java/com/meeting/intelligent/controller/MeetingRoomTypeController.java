@@ -9,7 +9,6 @@ import com.meeting.intelligent.entity.MeetingRoomTypeEntity;
 import com.meeting.intelligent.service.MeetingRoomTypeService;
 import com.meeting.intelligent.utils.PageUtils;
 import com.meeting.intelligent.utils.Result;
-import com.meeting.intelligent.vo.MeetingRoomTypeVo;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

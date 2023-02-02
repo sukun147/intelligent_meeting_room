@@ -77,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         checkPhoneUnique(userVo.getPhone());
         String code = redisTemplate.opsForValue().get(CAPTCHA_CODE_CACHE_PREFIX + userVo.getPhone());
         if (StringUtils.isBlank(code) || !userVo.getCode().equals(code.split("_")[0])) {
-            throw new GlobalException(CAPTCHA_CODE_WRONG_EXCEPTION.getMsg(), CAPTCHA_CODE_WRONG_EXCEPTION.getCode());
+            throw new GlobalException(CAPTCHA_CODE_WRONG_EXCEPTION);
         }
         redisTemplate.delete(CAPTCHA_CODE_WRONG_EXCEPTION + userVo.getPhone());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -98,7 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (0 != errorCode) {
             log.warn("人脸注册失败，错误码：{}，错误信息：{}", errorCode, jsonObject.getString("error_msg"));
             this.removeById(userEntity.getUserId());
-            throw new GlobalException(FACE_REGISTER_EXCEPTION.getMsg(), FACE_REGISTER_EXCEPTION.getCode());
+            throw new GlobalException(FACE_REGISTER_EXCEPTION);
         }
     }
 
@@ -111,7 +111,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (StringUtils.isNotBlank(count) && Integer.parseInt(count) > 5) {
             redisTemplate.expire(limit, 1, TimeUnit.DAYS);
             log.info("用户{}1小时内登录失败次数超过5次，禁用一天", username);
-            throw new GlobalException(USERNAME_DISABLE_EXCEPTION.getMsg(), USERNAME_DISABLE_EXCEPTION.getCode());
+            throw new GlobalException(USERNAME_DISABLE_EXCEPTION);
         }
         QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<UserEntity>().eq("username", username);
         UserEntity user = this.getOne(queryWrapper);
@@ -119,7 +119,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (user == null || !encoder.matches(loginVo.getPassword(), user.getPassword())) {
             ops.increment(limit, 1);
             redisTemplate.expire(limit, 1, TimeUnit.HOURS);
-            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
+            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION);
         }
         StpUtil.login(user.getUserId());
     }
@@ -128,7 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public UserRespVo get(Long userId) {
         long loginId = StpUtil.getLoginIdAsLong();
         if (loginId != 0L && loginId != userId) {
-            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
+            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION);
         }
         UserRespVo cache = userCache.get(userId.toString());
         if (cache != null) {
@@ -136,7 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         }
         UserEntity userEntity = this.getById(userId);
         if (userEntity==null){
-            throw new GlobalException(USER_NOT_EXIST_EXCEPTION.getMsg(), USER_NOT_EXIST_EXCEPTION.getCode());
+            throw new GlobalException(USER_NOT_EXIST_EXCEPTION);
         }
         UserRespVo userRespVo = new UserRespVo();
         BeanUtils.copyProperties(userEntity, userRespVo);
@@ -150,7 +150,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (loginId != 0L) {
             this.listByIds(userIds).forEach(user -> {
                 if (!user.getUserId().equals(loginId)) {
-                    throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
+                    throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION);
                 }
             });
         }
@@ -160,7 +160,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             int errorCode = jsonObject.getInt("error_code");
             if (0 != errorCode) {
                 log.warn("人脸删除失败，错误码：{}，错误信息：{}", errorCode, jsonObject.getString("error_msg"));
-                throw new GlobalException(FACE_DELETE_EXCEPTION.getMsg(), FACE_DELETE_EXCEPTION.getCode());
+                throw new GlobalException(FACE_DELETE_EXCEPTION);
             }
         }
         this.removeBatchByIds(userIds);
@@ -170,7 +170,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public void updateUser(UserVo userVo) {
         long loginId = StpUtil.getLoginIdAsLong();
         if (loginId != 0L && !userVo.getUserId().equals(loginId)) {
-            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION.getMsg(), ILLEGAL_ACCESS_EXCEPTION.getCode());
+            throw new GlobalException(ILLEGAL_ACCESS_EXCEPTION);
         }
         AipFace client = FaceClient.getInstance();
         JSONObject jsonObject = client.updateUser(
@@ -183,7 +183,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         int errorCode = jsonObject.getInt("error_code");
         if (0 != errorCode) {
             log.warn("人脸更新失败，错误码：{}，错误信息：{}", errorCode, jsonObject.getString("error_msg"));
-            throw new GlobalException(FACE_UPDATE_EXCEPTION.getMsg(), FACE_UPDATE_EXCEPTION.getCode());
+            throw new GlobalException(FACE_UPDATE_EXCEPTION);
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         userVo.setPassword(encoder.encode(userVo.getPassword()));
@@ -196,7 +196,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public void checkPhoneUnique(String phone) {
         long count = this.count(new QueryWrapper<UserEntity>().eq("phone", phone));
         if (count != 0) {
-            throw new GlobalException(PHONE_EXIST_EXCEPTION.getMsg(), PHONE_EXIST_EXCEPTION.getCode());
+            throw new GlobalException(PHONE_EXIST_EXCEPTION);
         }
     }
 
@@ -204,7 +204,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     public void checkUsernameUnique(String name) {
         long count = this.count(new QueryWrapper<UserEntity>().eq("username", name));
         if (count != 0) {
-            throw new GlobalException(USER_EXIST_EXCEPTION.getMsg(), USER_EXIST_EXCEPTION.getCode());
+            throw new GlobalException(USER_EXIST_EXCEPTION);
         }
     }
 
@@ -214,7 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         UserEntity userEntity = this.getById(id);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (userEntity == null || !encoder.matches(password, userEntity.getPassword())) {
-            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION.getMsg(), ACCOUNT_PASSWORD_WRONG_EXCEPTION.getCode());
+            throw new GlobalException(ACCOUNT_PASSWORD_WRONG_EXCEPTION);
         }
     }
 

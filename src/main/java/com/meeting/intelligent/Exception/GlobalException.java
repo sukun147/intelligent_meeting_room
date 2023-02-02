@@ -14,6 +14,12 @@ public class GlobalException extends RuntimeException {
     private String msg;
     private int code = UNKNOWN_EXCEPTION.getCode();
 
+    public GlobalException(ExceptionCodeEnum exceptionCodeEnum) {
+        super(exceptionCodeEnum.getMsg());
+        this.msg = exceptionCodeEnum.getMsg();
+        this.code = exceptionCodeEnum.getCode();
+    }
+
     public GlobalException(String msg) {
         super(msg);
         this.msg = msg;
