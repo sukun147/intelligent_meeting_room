@@ -81,10 +81,10 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<MeetingRespVo> page = this.page(new Query<MeetingEntity>().getPage(params), new QueryWrapper<>()).convert(
             meetingEntity -> {
-            MeetingRespVo meetingRespVo = new MeetingRespVo();
-            BeanUtils.copyProperties(meetingEntity, meetingRespVo);
-            return meetingRespVo;
-        });
+                MeetingRespVo meetingRespVo = new MeetingRespVo();
+                BeanUtils.copyProperties(meetingEntity, meetingRespVo);
+                return meetingRespVo;
+            });
         List<MeetingRespVo> records = page.getRecords();
         Set<Long> roomIds = new HashSet<>();
         records.forEach(record -> roomIds.add(record.getRoomId()));
@@ -131,9 +131,7 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                     reserveMeeting(meetingVo, createTime);
                 }
             };
-            String identity = "reserveMeetingJob" + meetingVo.getRoomId() + meetingVo.getStartTime().getTime();
-            JobDetail jobDetail = JobBuilder.newJob(reserveMeetingJob.getClass())
-                .withIdentity(identity, "reserveMeetingJobGroup").build();
+            JobDetail jobDetail = JobBuilder.newJob(reserveMeetingJob.getClass()).build();
             if (startTime.getTime() - createTime < TWO_DAY) {
                 reserveMeeting(meetingVo, createTime);
             } else if (startTime.getTime() - createTime < ONE_WEEK) {
@@ -185,6 +183,24 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
             });
         }
         this.removeBatchByIds(meetingIds);
+        List<MeetingEntity> periodicMeetings = this.list(new QueryWrapper<MeetingEntity>().in("meeting_id", meetingIds)
+            .isNotNull("scheduled_period"));
+        periodicMeetings.forEach(meeting -> {
+            try {
+                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+                scheduler.deleteJob(new JobKey(
+                    "periodicReserveJob" + meeting.getRoomId() + meeting.getStartTime().getTime(),
+                    "periodicReserveJobGroup"
+                ));
+                scheduler.deleteJob(new JobKey(
+                    "remindJob" + meeting.getMeetingId(), "remindJobGroup"
+                ));
+            } catch (SchedulerException e) {
+                log.error("删除quartz任务失败", e);
+                e.printStackTrace();
+                throw new GlobalException(SCHEDULER_EXCEPTION);
+            }
+        });
         meetingCache.removeAll(meetingIds.stream().map(String::valueOf).collect(Collectors.toSet()));
     }
 
@@ -322,14 +338,15 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                 QuartzJobBean periodicReserveJob = new QuartzJobBean() {
                     @Override
                     protected void executeInternal(JobExecutionContext jobExecutionContext) {
-                        saveMeeting(nextMeeting, roomId);
+                        baseMapper.insert(nextMeeting);
+                        remind(nextMeeting, meetingRoomService.getById(nextMeeting.getRoomId()).getPosition());
                     }
                 };
                 try {
                     Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-                    Long nextMeetingMeetingId = nextMeeting.getMeetingId();
                     JobDetail jobDetail = JobBuilder.newJob(periodicReserveJob.getClass()).withIdentity(
-                        "periodicReserveJob" + nextMeetingMeetingId, "periodicReserveJobGroup"
+                        "periodicReserveJob" + nextMeeting.getRoomId() + nextMeeting.getStartTime().getTime(),
+                        "periodicReserveJobGroup"
                     ).build();
                     String hourString = cron.retrieve(CronFieldName.HOUR).getExpression().asString();
                     String execPeriod = period.replace(hourString, String.valueOf(4));
@@ -340,7 +357,8 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                         long schedulerStartTime = Date.from(firstExecZonedDateTime.get().toInstant()).getTime()
                             - 1000 * 60 * 60;
                         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(
-                            "periodicReserveTrigger" + nextMeetingMeetingId, "periodicReserveTriggerGroup"
+                            "periodicReserveTrigger" + nextMeeting.getRoomId() + nextMeeting.getStartTime().getTime(),
+                            "periodicReserveTriggerGroup"
                         ).withSchedule(CronScheduleBuilder.cronSchedule(execPeriod)).startAt(
                             new Date(schedulerStartTime)
                         ).build();
@@ -371,7 +389,9 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingDao, MeetingEntity> i
                     });
                 }
             };
-            JobDetail jobDetail = JobBuilder.newJob(remindJob.getClass()).build();
+            JobDetail jobDetail = JobBuilder.newJob(remindJob.getClass()).withIdentity(
+                "remindJob" + meetingEntity.getMeetingId(), "remindJobGroup"
+            ).build();
             Trigger trigger = TriggerBuilder.newTrigger().startAt(
                 new Date(meetingEntity.getStartTime().getTime() - THIRTY_MINUTES)
             ).build();
