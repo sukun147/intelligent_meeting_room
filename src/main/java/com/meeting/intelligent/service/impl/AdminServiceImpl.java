@@ -38,7 +38,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> impleme
         if (StringUtils.isNotBlank(count) && Integer.parseInt(count) > 4) {
             redisTemplate.expire(limit, 1, TimeUnit.DAYS);
             log.warn("用户{}1小时内登录失败次数超过5次，禁用一天", username);
-            // TODO 发送邮件通知管理员
+            boolean isSend = EmailUtils.sendEmail("用户登录失败警告", new String[]{"1603289686@qq.com"}, null, "用户{}1小时内登录失败次数超过5次，禁用一天", null, username);
             throw new GlobalException(USERNAME_DISABLE_EXCEPTION);
         }
         AdminEntity admin = this.getOne(new QueryWrapper<AdminEntity>().eq("username", username));
