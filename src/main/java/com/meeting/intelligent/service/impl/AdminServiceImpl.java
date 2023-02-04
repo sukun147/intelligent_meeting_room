@@ -8,10 +8,10 @@ import com.meeting.intelligent.entity.AdminEntity;
 import com.meeting.intelligent.service.AdminService;
 import com.meeting.intelligent.vo.AdminRespVo;
 import com.meeting.intelligent.vo.LoginVo;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +26,7 @@ import static com.meeting.intelligent.utils.Constant.LOGIN_LIMIT_USERNAME_CACHE_
 @Slf4j
 @Service("adminService")
 public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> implements AdminService {
-    @Autowired
+    @Resource
     private StringRedisTemplate redisTemplate;
 
     @Override
