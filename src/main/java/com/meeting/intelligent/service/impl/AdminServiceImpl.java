@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.meeting.intelligent.utils.EmailUtils;
 import java.util.concurrent.TimeUnit;
 
 import static com.meeting.intelligent.Exception.ExceptionCodeEnum.ACCOUNT_PASSWORD_WRONG_EXCEPTION;
@@ -38,7 +38,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminDao, AdminEntity> impleme
         if (StringUtils.isNotBlank(count) && Integer.parseInt(count) > 4) {
             redisTemplate.expire(limit, 1, TimeUnit.DAYS);
             log.warn("用户{}1小时内登录失败次数超过5次，禁用一天", username);
-            boolean isSend = EmailUtils.sendEmail("用户登录失败警告", new String[]{"1603289686@qq.com"}, null, "用户{}1小时内登录失败次数超过5次，禁用一天", null, username);
+            EmailUtils.sendEmail("用户登录失败警告", new String[]{"1603289686@qq.com"}, null, "用户"+username+"1小时内登录失败次数超过5次，禁用一天", null);
             throw new GlobalException(USERNAME_DISABLE_EXCEPTION);
         }
         AdminEntity admin = this.getOne(new QueryWrapper<AdminEntity>().eq("username", username));
